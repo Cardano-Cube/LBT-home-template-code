@@ -89,7 +89,7 @@ class RENDERDATA {
                     let currentTabElement = evt.currentTarget;
                     let tabToActive = currentTabElement?.childNodes[0];
                     let tabToInactive = this.$durationTabs.filter(tab => tab.childNodes[0].classList.contains("active-tab"));
-                    tabToInactive.classList.remove("active-tab");
+                    tabToInactive[0].classList.remove("active-tab");
                     tabToActive.classList.add("active-tab");
                     let selectedDuration = currentTabElement?.getAttribute("token-data-ctrl");
                     this.GLOBAL_DATA_OBJECT.activeTab = selectedDuration;
