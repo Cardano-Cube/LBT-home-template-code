@@ -87,6 +87,10 @@ class RENDERDATA {
             this.$durationTabs.forEach(tab => {
                 tab.addEventListener("click", (evt) => {
                     let currentTabElement = evt.currentTarget;
+                    let tabToActive = currentTabElement?.childNodes[0];
+                    let tabToInactive = this.$durationTabs.filter(tab => tab.childNodes[0].classList.contains("active-tab"));
+                    tabToInactive.classList.remove("active-tab");
+                    tabToActive.classList.add("active-tab");
                     let selectedDuration = currentTabElement?.getAttribute("token-data-ctrl");
                     this.GLOBAL_DATA_OBJECT.activeTab = selectedDuration;
                     this.GLOBAL_DATA_OBJECT.renderNewChart = false
