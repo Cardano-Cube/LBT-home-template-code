@@ -274,7 +274,7 @@ class LOADANDRENDERTOKENS {
                 tokenImage.setAttribute("src", token.imageUrl);
 
                 //** change token name
-                tokenName.textContent = token.asset;
+                tokenName.textContent = token.fullName;
                 tokenType.textContent = token.asset;
 
                 // Add filter check
