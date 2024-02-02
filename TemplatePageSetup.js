@@ -31,6 +31,10 @@ class RENDERDATA {
 
         this.$downloadButton = document.querySelector("[token-button='download']");
 
+        this.$showBackupComponent = document.querySelector("[wrapper='about']");
+        this.$releaseDateAbout = document.querySelector("[about-card='date']");
+        this.$totalSupplyAbout = document.querySelector("[about-card='total-supply']");
+
         this.GLOBAL_DATA_OBJECT = {
             activeCurrency: "usd",
             tokenData: null,
@@ -88,9 +92,9 @@ class RENDERDATA {
                 tab.addEventListener("click", (evt) => {
                     let currentTabElement = evt.currentTarget;
                     let tabToActive = currentTabElement?.childNodes[0];
-                    let tabToInactive = this.$durationTabs.filter(tab =>{
-                    return tab.childNodes[0].classList.contains("active-tab")
-                });
+                    let tabToInactive = this.$durationTabs.filter(tab => {
+                        return tab.childNodes[0].classList.contains("active-tab")
+                    });
                     tabToInactive[0].childNodes[0].classList.remove("active-tab");
                     tabToActive.classList.add("active-tab");
                     let selectedDuration = currentTabElement?.getAttribute("token-data-ctrl");
@@ -101,8 +105,8 @@ class RENDERDATA {
                 })
             })
         }
-        if(this.$downloadButton  != null){
-            this.$downloadButton.addEventListener("click",()=>{
+        if (this.$downloadButton != null) {
+            this.$downloadButton.addEventListener("click", () => {
                 this.downloadChart();
             })
         }
@@ -114,21 +118,31 @@ class RENDERDATA {
         if (Object.keys(extractData).length > 0) {
             this.GLOBAL_DATA_OBJECT.tokenData = extractData;
             console.log(this.GLOBAL_DATA_OBJECT)
-            
+
             this.renderDataOnDom();
             this.renderDataOnChart();
             this.renderSwapper();
-            
+
             this.$wrapperToShow.style.opacity = 1;
             this.$loader.remove();
         }
     }
 
-    renderSwapper(){
-        let scriptElement = document.createElement("script");
-        scriptElement.type = "module";
-        scriptElement.innerHTML = `ReactDOM.render( React.createElement( dexhunterSwap, {"orderTypes":["SWAP","LIMIT"],"defaultToken":"${this.GLOBAL_DATA_OBJECT.tokenData["asset_id"]}","colors":{"background":"#FFFFFF","containers":"#F6F6F9","subText":"#859DA2","mainText":"#11424A","buttonText":"#FFFFFF","accent":"#00D061"},"theme":"light","width":"100%","partnerCode":"cardanocube.io616464723171396666367678737577656775683370667135716b6164756361746a65343468346a6437373678637a7266377466346c77733564666d6a6c68687133356c72717865367539633575667a7a733361306479357a3433746c32377466737a3875366c7ada39a3ee5e6b4b0d3255bfef95601890afd80709","partnerName":"CardanoCube.io"} ), document.getElementById('dexhunter-root') );`;
-        document.body.appendChild(scriptElement)
+    renderSwapper() {
+        if (this.GLOBAL_DATA_OBJECT.tokenData["asset_id"]) {
+            let scriptElement = document.createElement("script");
+            scriptElement.type = "module";
+            scriptElement.innerHTML = `ReactDOM.render( React.createElement( dexhunterSwap, {"orderTypes":["SWAP","LIMIT"],"defaultToken":"${this.GLOBAL_DATA_OBJECT.tokenData["asset_id"]}","colors":{"background":"#FFFFFF","containers":"#F6F6F9","subText":"#859DA2","mainText":"#11424A","buttonText":"#FFFFFF","accent":"#00D061"},"theme":"light","width":"100%","partnerCode":"cardanocube.io616464723171396666367678737577656775683370667135716b6164756361746a65343468346a6437373678637a7266377466346c77733564666d6a6c68687133356c72717865367539633575667a7a733361306479357a3433746c32377466737a3875366c7ada39a3ee5e6b4b0d3255bfef95601890afd80709","partnerName":"CardanoCube.io"} ), document.getElementById('dexhunter-root') );`;
+            document.body.appendChild(scriptElement);
+        } else {
+            this.$showBackupComponent.classList.remove("hide-wrapper");
+            let decimalAddedTotalSupply = this.GLOBAL_DATA_OBJECT.tokenData["total_supply"] && this.cutZeros(this.GLOBAL_DATA_OBJECT.tokenData["total_supply"], this.GLOBAL_DATA_OBJECT.tokenData["decimals"]);
+
+            let total_supply = decimalAddedTotalSupply
+            this.$totalSupplyAbout.textContent = total_supply
+
+            this.$releaseDateAbout.textContent = this.GLOBAL_DATA_OBJECT.tokenData["created_date"] && new Date(this.GLOBAL_DATA_OBJECT.tokenData["created_date"]).getFullYear();
+        }
     }
     renderDataOnDom() {
         if (this.GLOBAL_DATA_OBJECT.activeCurrency == "usd") {
@@ -313,7 +327,7 @@ class RENDERDATA {
     }
 
     cutZeros(number, zerosToCut) {
-        if(zerosToCut == 0)return number;
+        if (zerosToCut == 0) return number;
         let strNum = number.toString();
         return strNum.slice(0, -zerosToCut);
     }
@@ -365,7 +379,7 @@ class RENDERDATA {
     }
     createLineChart(element, data) {
         let chartHeight = parseFloat(window.getComputedStyle(element).height);
-        let chartWidth= parseFloat(window.getComputedStyle(element).width);
+        let chartWidth = parseFloat(window.getComputedStyle(element).width);
         // Convert object to array of objects
         const dataArray = Object.entries(data).map(([date, value]) => ({ date, value }));
 
@@ -437,7 +451,7 @@ class RENDERDATA {
         const downloadLink = document.createElement('a');
         downloadLink.href = imageDataURL.toDataURL();
         const fileName = new Date().getFullYear();
-        downloadLink.download = `chart${fileName}.png`; 
+        downloadLink.download = `chart${fileName}.png`;
         downloadLink.click();
     }
 
