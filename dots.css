@@ -1,4 +1,6 @@
-
+[slider-parent="desktop"] .slick-track{
+    display: flex;
+}
 
 .slick-dots {
   display: flex;
