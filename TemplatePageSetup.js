@@ -143,8 +143,8 @@ class RENDERDATA {
                 }
 
                 else if (!this.checkIfLowOrHigh(this.GLOBAL_DATA_OBJECT.tokenData["24h_change_usd"])) {
-                    tokenMonthChange.classList.remove("is-low")
-                    tokenMonthChange.classList.add("is-high")
+                    this.$changePercentElement.classList.remove("is-low")
+                    this.$changePercentElement.classList.add("is-high")
                 }
 
                 this.$changeDurationElement.textContent = "24H";
