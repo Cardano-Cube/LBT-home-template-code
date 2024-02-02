@@ -142,7 +142,7 @@ class RENDERDATA {
                     this.$changePercentElement.classList.remove("is-high")
                 }
 
-                else if (!this.checkIfLowOrHigh(token["24h_change_usd"])) {
+                else if (!this.checkIfLowOrHigh(this.GLOBAL_DATA_OBJECT.tokenData["24h_change_usd"])) {
                     tokenMonthChange.classList.remove("is-low")
                     tokenMonthChange.classList.add("is-high")
                 }
