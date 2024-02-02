@@ -61,3 +61,8 @@
 .three-col_mobile-slider-wrapper{
     overflow: visible !important;
 }
+
+/* Fix for dexhunter */
+#dexhunter-container :is(.dhs-pt-3){
+    overflow: scroll;
+}
