@@ -23,7 +23,7 @@ class LOADANDRENDERTOKENS {
 
         this.$mainDropDownWrapper = document.querySelector("[home-wrapper='dropdown']");
         this.$activeComponent = this.$mainDropDownWrapper?.querySelector("[dropdown-active='component']");
-        this.$allCurrencyCategory = this.$mainDropDownWrapper?.querySelectorAll("[dropdown]");
+        this.$allCurrencyCategory = [...this.$mainDropDownWrapper?.querySelectorAll("[dropdown]")];
         this.$activeCurrencyImageElement = this.$activeComponent?.querySelector("img");
         this.$activeCurrencyText = this.$activeComponent?.querySelector(".tabs_dropdown-text");
 
@@ -42,6 +42,7 @@ class LOADANDRENDERTOKENS {
             // activeCategory: "top-50",
             activeCategory: "trending",
             activeCurrency: "usd",
+            cookieName:"currentCurrency",
             tokensData: null,
             tokensToRender: 5,
             topFiftyTokens: [],
@@ -70,6 +71,11 @@ class LOADANDRENDERTOKENS {
         let extractData = await callAPI.json();
         if (Object.keys(extractData).length > 0) {
             this.globalObject.tokensData = extractData;
+            this.globalObject.activeCurrency=this.checkCookie(this.globalObject.cookieName)??"usd";
+            this.dropDownCurrency = this.$allCurrencyCategory.filter(item => item.getAttribute("dropdown")===this.globalObject.activeCurrency);
+            if(this.dropDownCurrency?.length>0){
+                this.updateDropDown(this.dropDownCurrency[0])
+            }
             this.addImageAndPageURl();
             this.filterTokens();
             this.sortTokens();
@@ -207,15 +213,8 @@ class LOADANDRENDERTOKENS {
             this.$allCurrencyCategory.forEach(currency => {
                 currency.addEventListener("click", (evt) => {
                     let selectedCurrencyElement = evt.currentTarget;
-                    let selectedCurrency = selectedCurrencyElement?.getAttribute("dropdown");
-                    let selectedCurrencyName = selectedCurrencyElement.textContent;
-                    let selectedCurrencyImage = selectedCurrencyElement?.querySelector("img")?.getAttribute("src");
-
-                    this.$activeCurrencyImageElement.removeAttribute("srcset");
-                    this.$activeCurrencyImageElement.setAttribute("src", selectedCurrencyImage);
-                    this.$activeCurrencyText.textContent = selectedCurrencyName;
-                    this.globalObject.activeCurrency = selectedCurrency;
-
+                   this.updateDropDown(selectedCurrencyElement)
+                    this.updateCookie(this.globalObject.cookieName, this.globalObject.activeCurrency, 30);
                     this.splitAndRender(false);
                     this.addDataOnHeroSection();
 
@@ -230,6 +229,17 @@ class LOADANDRENDERTOKENS {
             })
         }
 
+    }
+
+    updateDropDown(elementToActive){
+        let selectedCurrency = elementToActive?.getAttribute("dropdown");
+        let selectedCurrencyName = elementToActive.textContent;
+        let selectedCurrencyImage = elementToActive?.querySelector("img")?.getAttribute("src");
+
+        this.$activeCurrencyImageElement.removeAttribute("srcset");
+        this.$activeCurrencyImageElement.setAttribute("src", selectedCurrencyImage);
+        this.$activeCurrencyText.textContent = selectedCurrencyName;
+        this.globalObject.activeCurrency = selectedCurrency;
     }
 
     sortTokens() {
@@ -313,7 +323,7 @@ class LOADANDRENDERTOKENS {
                     tokenWeekChange.textContent = token["7d_change_usd"] && this.formatNumber(token["7d_change_usd"], true) + "%";
                     tokenMonthChange.textContent = token["1mo_change_usd"] && this.formatNumber(token["1mo_change_usd"], true) + "%";
                     tokenVolume.textContent = "$" + token["24h_vol_usd"]?.toFixed(3);
-                    
+
                     this.createLineChart(tokenChartWrapper, token["chart_7d_usd"], token["7d_change_usd"]);
 
                 }
@@ -354,7 +364,7 @@ class LOADANDRENDERTOKENS {
                     tokenWeekChange.textContent = token["7d_change_ada"] && this.formatNumber(token["7d_change_ada"], true) + "%";
                     tokenMonthChange.textContent = token["1mo_change_ada"] && this.formatNumber(token["1mo_change_ada"], true) + "%";
                     tokenVolume.textContent = token["24h_vol_ada"]?.toFixed(3) + "₳";
-                    
+
                     this.createLineChart(tokenChartWrapper, token["chart_7d_ada"], token["7d_change_ada"]);
                 }
 
@@ -407,17 +417,17 @@ class LOADANDRENDERTOKENS {
             timeScale: {
                 visible: false, // Hide the time scale
             },
-            crosshairMarkerVisible:{
+            crosshairMarkerVisible: {
                 visible: false, // Hide the time scale
             },
-            pointMarkersVisible:{
+            pointMarkersVisible: {
                 visible: false, // Hide the time scale
             },
         });
 
         // Add a line series to the chart
         const lineSeries = chart.addLineSeries({
-            color: this.checkIfLowOrHigh(checkNegative)?"#FF2C2C":"#00D061", // Set the line color
+            color: this.checkIfLowOrHigh(checkNegative) ? "#FF2C2C" : "#00D061", // Set the line color
             lineWidth: 2, // Set the line width
             priceLineVisible: false, // Display the price line
         });
@@ -443,17 +453,17 @@ class LOADANDRENDERTOKENS {
     }
 
     convertTimeDate(inputTime) {
-            // Parse the input time string into a Date object
-            let date = new Date(inputTime);
-        
-            // Get the Unix timestamp (milliseconds since January 1, 1970)
-            let timestamp = date.getTime();
-        
-            // Convert milliseconds to seconds
-            timestamp = Math.floor(timestamp / 1000);
-        
-            return timestamp;
-        
+        // Parse the input time string into a Date object
+        let date = new Date(inputTime);
+
+        // Get the Unix timestamp (milliseconds since January 1, 1970)
+        let timestamp = date.getTime();
+
+        // Convert milliseconds to seconds
+        timestamp = Math.floor(timestamp / 1000);
+
+        return timestamp;
+
     }
 
     checkIfLowOrHigh(token) {
@@ -461,15 +471,15 @@ class LOADANDRENDERTOKENS {
     }
 
     formatNumber(num, removeNeg) {
-    // Remove "-" sign if present
-   removeNeg?num = Math.abs(num):"";
-    
-    if (num >= 1000) {
-        return (num / 1000).toFixed(2) + "K";
-    } else {
-        return num?.toFixed(2);
+        // Remove "-" sign if present
+        removeNeg ? num = Math.abs(num) : "";
+
+        if (num >= 1000) {
+            return (num / 1000).toFixed(2) + "K";
+        } else {
+            return num?.toFixed(2);
+        }
     }
-}
 
     reduceNumber(num) {
         // Convert number to string
@@ -673,6 +683,29 @@ class LOADANDRENDERTOKENS {
 
     }
 
+    checkCookie(cookieName) {
+        // Split document.cookie into individual cookies
+        let cookies = document.cookie.split(';');
+        // Loop through the cookies
+        for (let i = 0; i < cookies.length; i++) {
+            // Split the cookie into name and value
+            let cookie = cookies[i].trim().split('=');
+            // Check if the cookie name matches the provided name
+            if (cookie[0] === cookieName) {
+                // Cookie exists, return its value
+                return cookie[1];
+            }
+        }
+        // Cookie does not exist
+        return null;
+    }
+
+    updateCookie(cookieName, cookieValue, expirationDays) {
+        let d = new Date();
+        d.setTime(d.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
+        let expires = "expires="+ d.toUTCString();
+        document.cookie = cookieName + "=" + cookieValue + ";" + expires + ";path=/";
+    }
 
 
 }
