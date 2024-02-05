@@ -283,7 +283,6 @@ class LOADANDRENDERTOKENS {
                 urlElement.setAttribute("href", token.pageUrl);
                 tokenImage.setAttribute("src", token.imageUrl);
 
-                //** change token name
                 tokenName.textContent = token.fullName;
                 tokenType.textContent = token.asset;
 
@@ -482,22 +481,22 @@ class LOADANDRENDERTOKENS {
     }
 
     reduceNumber(num) {
-        // Convert number to string
-        let numStr = num.toString();
+       // Convert number to string
+    let numStr = num.toString();
 
-        // Find the position of the decimal point
-        let decimalIndex = numStr.indexOf('.');
+    // Find the position of the decimal point
+    let decimalIndex = numStr.indexOf('.');
 
-        // If decimal point exists
-        if (decimalIndex !== -1) {
-            // Keep only three digits after the decimal point
-            numStr = parseFloat(numStr).toFixed(6).slice(0, decimalIndex + 5);
+    // If decimal point exists
+    if (decimalIndex !== -1) {
+        // Keep only six digits after the decimal point
+        numStr = parseFloat(numStr).toFixed(6).slice(0, decimalIndex + 7);
 
-            // Remove any trailing zeros beyond the third digit
-            numStr = numStr.replace(/(\.\d*?[1-9])0+$/, '$1');
-        }
+        // Remove any trailing zeros beyond the sixth digit
+        numStr = numStr.replace(/(\.\d*?[1-9])0+$/, '$1');
+    }
 
-        return numStr;
+    return numStr;
     }
 
     clearDom(wrapper) {
