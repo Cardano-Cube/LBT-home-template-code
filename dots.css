@@ -1,5 +1,6 @@
 [slider-parent="desktop"] .slick-track{
     display: flex;
+    font-size: 1vw;
 }
 
 .slick-dots {
@@ -65,4 +66,10 @@
 /* Fix for dexhunter */
 #dexhunter-container :is(.dhs-pt-3){
     overflow: scroll;
+}
+
+@media only screen and (max-width:1280px) and (min-width:992px){
+    .three-col_promo-item{
+       max-width: 24.0972222222em;
+    }    
 }
