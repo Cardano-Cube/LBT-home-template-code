@@ -27,6 +27,7 @@ function moveCms(){
 function showMore(){
     let wrapperToHideShow = document.querySelector("[wrapper='show-more']");
     let showMoreCta = document.querySelector("[token-button='show-more']");
+    let showMoreText = showMoreCta?.querySelector("div");
     let arrowIcon = showMoreCta?.querySelector("img");
 
     if(showMoreCta != null){
@@ -34,10 +35,12 @@ function showMore(){
             if(wrapperToHideShow.classList.contains("hide-wrapper")){
                 wrapperToHideShow.classList.remove("hide-wrapper");
                 arrowIcon.style.transform = "rotate(180deg)";
+                showMoreText.textContent = "Show less";
             }
             else{
                 wrapperToHideShow.classList.add("hide-wrapper");
                 arrowIcon.style.transform = "rotate(0deg)";
+                showMoreText.textContent = "Show more";
             }
         })
     }
