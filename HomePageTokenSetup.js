@@ -29,7 +29,7 @@ class LOADANDRENDERTOKENS {
 
         this.$tableContainer = document.querySelector("[wrapper='to-render']");
 
-        this.$loadMore = document.querySelector(".project_pagination-btn");
+        this.$loadMore = document.querySelector("[pagination='load-more']");
 
         this.loadAllTokensAPI = "https://cron-jobs.milan-houter.workers.dev/";
         this.options = {
@@ -60,7 +60,7 @@ class LOADANDRENDERTOKENS {
             topGainerTokensToRenderPosition: 0,
             topLoserTokensToRenderPosition: 0,
         }
-
+        this.viewportObserver = new ResizeObserver(this.handleViewportResize.bind(this));
         this.init()
     }
 
@@ -84,10 +84,9 @@ class LOADANDRENDERTOKENS {
             this.splitAndRender(true);
             this.addFilterListener();
             this.addDataOnHeroSection();
-            this.handleOpacityOnResize();
-
+            this.viewportObserver.observe(document.body);
             // **show table container
-            this.$tableContainer.style.display = "block";
+            this.$tableContainer.style.display = "table";
 
             // ** Activate mobile slider
             MobileSlider();
@@ -101,6 +100,7 @@ class LOADANDRENDERTOKENS {
                 tokenCode = token.asset;
                 matchDomElement = this.$tokenItem.filter(tokenDom => {
                     tokenCodeElement = tokenDom?.querySelector("[token-item='type']");
+                    console.log(tokenCodeElement)
                     return (tokenCode == tokenCodeElement?.textContent)
                 })
                 if (matchDomElement != null && matchDomElement?.length > 0) {
@@ -108,6 +108,7 @@ class LOADANDRENDERTOKENS {
                     imageUrl = imageElement?.getAttribute("src");
                     // urlElement = matchDomElement[0]?.querySelector("[token-url]");
                     pageUrl = matchDomElement[0].getAttribute("href");
+
                     token.imageUrl = imageUrl
                     token.pageUrl = pageUrl;
                 }
@@ -443,6 +444,7 @@ class LOADANDRENDERTOKENS {
 
     createLineChart(element, data, checkNegative) {
         // Convert object to array of objects
+       if(data == null)return;
         const dataArray = Object.entries(data).map(([date, value]) => ({ date, value }));
 
         // Sort the array by date in ascending order
@@ -763,8 +765,8 @@ class LOADANDRENDERTOKENS {
 
     }
 
-    handleOpacityOnResize() {
-        window.addEventListener("resize", () => {
+    handleViewportResize() {
+        // window.addEventListener("resize", () => {
             this.$trendingTokenWrapper.forEach(wrapper => {
                 this.$trendingTokenToInjectWrapper = wrapper?.querySelector("[trending-token='wrapper']");
                 this.$trendingTokenToInjectWrapper.style.opacity = "1";
@@ -776,7 +778,7 @@ class LOADANDRENDERTOKENS {
             this.$promotedWrapper.forEach(wrapper => {
                 wrapper.style.opacity = 1;
             });
-        })
+        // })
 
     }
 
