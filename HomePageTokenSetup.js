@@ -27,6 +27,8 @@ class LOADANDRENDERTOKENS {
         this.$activeCurrencyImageElement = this.$activeComponent?.querySelector("img");
         this.$activeCurrencyText = this.$activeComponent?.querySelector(".tabs_dropdown-text");
 
+        this.$tableContainer = document.querySelector("[wrapper='to-render']");
+
         this.$loadMore = document.querySelector(".project_pagination-btn");
 
         this.loadAllTokensAPI = "https://cron-jobs.milan-houter.workers.dev/";
@@ -42,7 +44,7 @@ class LOADANDRENDERTOKENS {
             // activeCategory: "top-50",
             activeCategory: "trending",
             activeCurrency: "usd",
-            cookieName:"currentCurrency",
+            cookieName: "currentCurrency",
             tokensData: null,
             tokensToRender: 5,
             topFiftyTokens: [],
@@ -71,9 +73,9 @@ class LOADANDRENDERTOKENS {
         let extractData = await callAPI.json();
         if (Object.keys(extractData).length > 0) {
             this.globalObject.tokensData = extractData;
-            this.globalObject.activeCurrency=this.checkCookie(this.globalObject.cookieName)??"usd";
-            this.dropDownCurrency = this.$allCurrencyCategory.filter(item => item.getAttribute("dropdown")===this.globalObject.activeCurrency);
-            if(this.dropDownCurrency?.length>0){
+            this.globalObject.activeCurrency = this.checkCookie(this.globalObject.cookieName) ?? "usd";
+            this.dropDownCurrency = this.$allCurrencyCategory.filter(item => item.getAttribute("dropdown") === this.globalObject.activeCurrency);
+            if (this.dropDownCurrency?.length > 0) {
                 this.updateDropDown(this.dropDownCurrency[0])
             }
             this.addImageAndPageURl();
@@ -83,6 +85,9 @@ class LOADANDRENDERTOKENS {
             this.addFilterListener();
             this.addDataOnHeroSection();
             this.handleOpacityOnResize();
+
+            // **show table container
+            this.$tableContainer.style.display = "block";
 
             // ** Activate mobile slider
             MobileSlider();
@@ -101,8 +106,8 @@ class LOADANDRENDERTOKENS {
                 if (matchDomElement != null && matchDomElement?.length > 0) {
                     imageElement = matchDomElement[0]?.querySelector("[token-item='image']");
                     imageUrl = imageElement?.getAttribute("src");
-                    urlElement = matchDomElement[0]?.querySelector("[token-url]");
-                    pageUrl = urlElement.getAttribute("href");
+                    // urlElement = matchDomElement[0]?.querySelector("[token-url]");
+                    pageUrl = matchDomElement[0].getAttribute("href");
                     token.imageUrl = imageUrl
                     token.pageUrl = pageUrl;
                 }
@@ -213,7 +218,7 @@ class LOADANDRENDERTOKENS {
             this.$allCurrencyCategory.forEach(currency => {
                 currency.addEventListener("click", (evt) => {
                     let selectedCurrencyElement = evt.currentTarget;
-                   this.updateDropDown(selectedCurrencyElement)
+                    this.updateDropDown(selectedCurrencyElement)
                     this.updateCookie(this.globalObject.cookieName, this.globalObject.activeCurrency, 30);
                     this.splitAndRender(false);
                     this.addDataOnHeroSection();
@@ -231,7 +236,7 @@ class LOADANDRENDERTOKENS {
 
     }
 
-    updateDropDown(elementToActive){
+    updateDropDown(elementToActive) {
         let selectedCurrency = elementToActive?.getAttribute("dropdown");
         let selectedCurrencyName = elementToActive.textContent;
         let selectedCurrencyImage = elementToActive?.querySelector("img")?.getAttribute("src");
@@ -278,13 +283,22 @@ class LOADANDRENDERTOKENS {
                 let tokenMarketCap = clonedToken?.querySelector("[token-item='market-cap']");
                 let tokenVolume = clonedToken?.querySelector("[token-item='volume']");
                 let tokenChartWrapper = clonedToken?.querySelector("[token-item='chart']");
+                let allLinkWrapper = clonedToken?.querySelectorAll("[token-url]");
 
                 indexElement.textContent = index + 1;
                 urlElement.setAttribute("href", token.pageUrl);
+                this.addClickRedirection(token.pageUrl, clonedToken);
+
                 tokenImage.setAttribute("src", token.imageUrl);
 
                 tokenName.textContent = token.fullName;
                 tokenType.textContent = token.asset;
+
+                if (allLinkWrapper?.length > 0) {
+                    allLinkWrapper.forEach(urlBlock => {
+                        urlBlock.setAttribute("href", token.pageUrl);
+                    })
+                }
 
                 // Add filter check
                 if (this.globalObject.activeCurrency == "usd") {
@@ -315,13 +329,15 @@ class LOADANDRENDERTOKENS {
                         tokenMonthChange.classList.add("is-high")
                     }
 
-                    tokenPrice.textContent = "$" + this.reduceNumber(token.price_in_usd);
+                    console.log(this.reduceNumber(token.price_in_usd))
+
+                    tokenPrice.innerHTML = `$ ${this.reduceNumber(token.price_in_usd)}`;
                     tokenMarketCap.textContent = "not available"
                     tokenMarketMobile.textContent = "not available"
                     tokenDayChange.textContent = token["24h_change_usd"] && this.formatNumber(token["24h_change_usd"], true) + "%";
                     tokenWeekChange.textContent = token["7d_change_usd"] && this.formatNumber(token["7d_change_usd"], true) + "%";
                     tokenMonthChange.textContent = token["1mo_change_usd"] && this.formatNumber(token["1mo_change_usd"], true) + "%";
-                    tokenVolume.textContent = "$" + token["24h_vol_usd"]?.toFixed(3);
+                    tokenVolume.textContent = "$" + this.convertToInternationalCurrencySystem(token["24h_vol_usd"]);
 
                     this.createLineChart(tokenChartWrapper, token["chart_7d_usd"], token["7d_change_usd"]);
 
@@ -362,7 +378,7 @@ class LOADANDRENDERTOKENS {
                     tokenDayChange.textContent = token["24h_change_ada"] && this.formatNumber(token["24h_change_ada"], true) + "%";
                     tokenWeekChange.textContent = token["7d_change_ada"] && this.formatNumber(token["7d_change_ada"], true) + "%";
                     tokenMonthChange.textContent = token["1mo_change_ada"] && this.formatNumber(token["1mo_change_ada"], true) + "%";
-                    tokenVolume.textContent = token["24h_vol_ada"]?.toFixed(3) + "₳";
+                    tokenVolume.textContent = this.formatNumberWithCommas(token["24h_vol_usd"]) + "₳";
 
                     this.createLineChart(tokenChartWrapper, token["chart_7d_ada"], token["7d_change_ada"]);
                 }
@@ -376,6 +392,53 @@ class LOADANDRENDERTOKENS {
 
         }
 
+    }
+
+    convertToInternationalCurrencySystem(labelValue, isUSCurrency) {
+        // Check if the absolute value of labelValue is greater than or equal to 600,000
+        if (Math.abs(Number(labelValue)) >= 400000) {
+            // Nine Zeroes for Billions
+            return Math.abs(Number(labelValue)) >= 1.0e+9
+                ? (Math.abs(Number(labelValue)) / 1.0e+9).toFixed(2) + "B"
+                // Six Zeroes for Millions 
+                : Math.abs(Number(labelValue)) >= 1.0e+6
+                    ? (Math.abs(Number(labelValue)) / 1.0e+6).toFixed(2) + "M"
+                    // Three Zeroes for Thousands
+                    : Math.abs(Number(labelValue)) >= 1.0e+3
+                        ? (Math.abs(Number(labelValue)) / 1.0e+3).toFixed(2) + "K"
+                        : Math.abs(Number(labelValue));
+        } else {
+            // If labelValue is less than 600,000, return the original value without abbreviation
+            if (isUSCurrency) {
+                // Format as US currency (e.g., 1,234.56)
+                return labelValue.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+            } else {
+                // Format as normal currency (e.g., 1 234,56)
+                return labelValue.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+            }
+        }
+    }
+
+    formatNumberWithCommas(number, isUSCurrency) {
+        // Check if isUSCurrency is true or not
+        if (isUSCurrency) {
+            // Format as US currency (e.g., 1,234.56)
+            return number.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+        } else {
+            // Format as normal currency (e.g., 1 234,56)
+            return number.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+        }
+    }
+
+
+    addClickRedirection(pageUrl, elementToLink) {
+        if (elementToLink != null) {
+            elementToLink.addEventListener("click", () => {
+                const searchParams = window.location.search;
+                const urlWithParams = `${pageUrl}${searchParams}`;
+                window.location.assign(urlWithParams)
+            })
+        }
     }
 
     createLineChart(element, data, checkNegative) {
@@ -416,12 +479,30 @@ class LOADANDRENDERTOKENS {
             timeScale: {
                 visible: false, // Hide the time scale
             },
+            crosshair: {
+                mode: "none", // Disable the crosshair tooltip
+                horzLine: {
+                    visible: false, // Hide horizontal crosshair line
+                },
+                vertLine: {
+                    visible: false, // Hide vertical crosshair line
+                },
+                // Disable the crosshair point and price label dot
+                point: {
+                    visible: false,
+                },
+                price: {
+                    visible: false,
+                },
+            },
             crosshairMarkerVisible: {
-                visible: false, // Hide the time scale
+                visible: false,
             },
             pointMarkersVisible: {
-                visible: false, // Hide the time scale
+                visible: false,
             },
+            handleScroll: false, // Disable scroll events
+            handleScale: false, // Disable zoom events
         });
 
         // Add a line series to the chart
@@ -434,6 +515,7 @@ class LOADANDRENDERTOKENS {
         const chartData = this.formatData(sortedChartData);
 
         lineSeries.setData(chartData);
+        chart.timeScale().fitContent();
 
 
     }
@@ -480,23 +562,39 @@ class LOADANDRENDERTOKENS {
         }
     }
 
-    reduceNumber(num) {
-       // Convert number to string
-    let numStr = num.toString();
-
-    // Find the position of the decimal point
-    let decimalIndex = numStr.indexOf('.');
-
-    // If decimal point exists
-    if (decimalIndex !== -1) {
-        // Keep only six digits after the decimal point
-        numStr = parseFloat(numStr).toFixed(6).slice(0, decimalIndex + 7);
-
-        // Remove any trailing zeros beyond the sixth digit
-        numStr = numStr.replace(/(\.\d*?[1-9])0+$/, '$1');
-    }
-
-    return numStr;
+    reduceNumber(value) {
+        let valueStr = value.toString();
+        let [integerPart, decimalPart] = valueStr.includes('.') ? valueStr.split('.') : [valueStr, ''];
+        let formattedNumber = '';
+      
+        if (decimalPart.startsWith('0') && decimalPart.length > 1) {
+          // Count leading zeros in the decimal part
+          let leadingZerosCount = decimalPart.match(/^0*/)[0].length;
+      
+          // Calculate the significant digits including leading zeros
+          let significantDigits = leadingZerosCount + 4; // 4 significant digits including leading zeros
+      
+          // Round the number to the total count of significant digits
+          let roundedValue = Number(value).toFixed(significantDigits);
+      
+          // Remove trailing zeros after rounding, if any
+          roundedValue = parseFloat(roundedValue).toString();
+      
+          // Split again in case rounding changed the structure
+          [integerPart, decimalPart] = roundedValue.split('.');
+      
+          // Format with leading zeros in decimal if they still exist
+          if (decimalPart && decimalPart.startsWith('0')) {
+            formattedNumber = `${integerPart}.${decimalPart}`;
+          } else {
+            formattedNumber = roundedValue;
+          }
+        } else {
+          // For numbers without leading zeros in the decimal part, simply round to four significant figures
+          formattedNumber = parseFloat(parseFloat(value).toFixed(3)).toString();
+        }
+      
+        return formattedNumber;
     }
 
     clearDom(wrapper) {
@@ -702,7 +800,7 @@ class LOADANDRENDERTOKENS {
     updateCookie(cookieName, cookieValue, expirationDays) {
         let d = new Date();
         d.setTime(d.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
-        let expires = "expires="+ d.toUTCString();
+        let expires = "expires=" + d.toUTCString();
         document.cookie = cookieName + "=" + cookieValue + ";" + expires + ";path=/";
     }
 
