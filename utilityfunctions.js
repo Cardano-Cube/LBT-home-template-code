@@ -17,11 +17,15 @@ function hideOrShowLinks(){
 function moveCms(){
     let checkWindow = window.screen.width<1280;
     let wrapperToMove = document.querySelector("[wrapper='collection']");
+    let currentPosition = wrapperToMove?.parentElement;
     let wrapperToInject = document.querySelector("[inject='collection']");
 
     if(checkWindow){
         wrapperToInject.appendChild(wrapperToMove);
+    }else{
+        currentPosition.appendChild(wrapperToMove);
     }
+
 }
 
 function showMore(){
