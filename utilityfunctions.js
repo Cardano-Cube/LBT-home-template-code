@@ -21,9 +21,10 @@ function moveCms(){
     let wrapperToInject = document.querySelector("[inject='collection']");
 
     if(checkWindow){
-        wrapperToInject.appendChild(wrapperToMove);
+        wrapperToMove&&wrapperToInject.appendChild(wrapperToMove);
     }else{
-        currentPosition.appendChild(wrapperToMove);
+        wrapperToMove = document.querySelector("[wrapper='collection']");
+        wrapperToMove&&currentPosition.appendChild(wrapperToMove);
     }
 
 }
