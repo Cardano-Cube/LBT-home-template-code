@@ -43,6 +43,12 @@ function showMore(){
     }
 }
 
+function resizeHandler(){
+    const viewportObserver = new ResizeObserver(moveCms);
+    viewportObserver.observe(document.body);
+
+}
+
 showMore();
-moveCms();
+resizeHandler();
 hideOrShowLinks();
