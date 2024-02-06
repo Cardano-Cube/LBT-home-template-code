@@ -56,6 +56,9 @@ class RENDERDATA {
             }),
         }
 
+        this.viewportObserver = new ResizeObserver(this.handleViewportResize.bind(this));
+
+
         this.init();
     }
 
@@ -81,8 +84,6 @@ class RENDERDATA {
                     this.GLOBAL_DATA_OBJECT.renderNewChart = false;
                     this.renderDataOnChart();
                     this.renderDataOnDom();
-
-
                 })
             })
         }
@@ -117,14 +118,15 @@ class RENDERDATA {
         let extractData = await callAPI.json();
         if (Object.keys(extractData).length > 0) {
             this.GLOBAL_DATA_OBJECT.tokenData = extractData;
-            console.log(this.GLOBAL_DATA_OBJECT)
 
-            this.renderDataOnDom();
+            this.renderDataOnDom(false);
             this.renderDataOnChart();
             this.renderSwapper();
 
             this.$wrapperToShow.style.opacity = 1;
             this.$loader.remove();
+            this.viewportObserver.observe(document.body);
+
         }
     }
 
@@ -146,7 +148,7 @@ class RENDERDATA {
     }
     renderDataOnDom() {
         if (this.GLOBAL_DATA_OBJECT.activeCurrency == "usd") {
-            this.$tokenPriceElement.textContent = "$" + this.reduceNumber(this.GLOBAL_DATA_OBJECT.tokenData?.price_in_usd);
+            this.$tokenPriceElement.innerHTML = "$" + this.reduceNumber(this.GLOBAL_DATA_OBJECT.tokenData.price_in_usd);
 
             if (this.GLOBAL_DATA_OBJECT.activeTab == "one-day") {
                 this.$changePercentElement.textContent = this.GLOBAL_DATA_OBJECT.tokenData["24h_change_usd"] && this.formatNumber(this.GLOBAL_DATA_OBJECT.tokenData["24h_change_usd"], true) + "%"
@@ -223,7 +225,7 @@ class RENDERDATA {
 
         }
         else if (this.GLOBAL_DATA_OBJECT.activeCurrency == "ada") {
-            this.$tokenPriceElement.textContent = this.reduceNumber(this.GLOBAL_DATA_OBJECT.tokenData?.price_in_ada) + "₳";
+            this.$tokenPriceElement.innerHTML = this.reduceNumber(this.GLOBAL_DATA_OBJECT.tokenData?.price_in_ada) + "₳";
 
             if (this.GLOBAL_DATA_OBJECT.activeTab == "one-day") {
                 this.$changePercentElement.textContent = this.GLOBAL_DATA_OBJECT.tokenData["24h_change_ada"] && this.formatNumber(this.GLOBAL_DATA_OBJECT.tokenData["24h_change_ada"], true) + "%"
@@ -333,118 +335,139 @@ class RENDERDATA {
     }
 
 
-    renderDataOnChart() {
+    renderDataOnChart(reRender) {
         if (this.GLOBAL_DATA_OBJECT.activeTab == "one-day") {
             if (this.GLOBAL_DATA_OBJECT.activeCurrency == "usd") {
-                this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_24h_usd"]);
+                this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_24h_usd"], reRender);
             } else if (this.GLOBAL_DATA_OBJECT.activeCurrency == "ada") {
-                this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_24h_ada"]);
+                this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_24h_ada"], reRender);
 
             }
         }
         else if (this.GLOBAL_DATA_OBJECT.activeTab == "seven-day") {
             if (this.GLOBAL_DATA_OBJECT.activeCurrency == "usd") {
-                this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_7d_usd"]);
+                this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_7d_usd"], reRender);
             } else if (this.GLOBAL_DATA_OBJECT.activeCurrency == "ada") {
-                this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_7d_ada"]);
+                this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_7d_ada"], reRender);
 
             }
 
         } else if (this.GLOBAL_DATA_OBJECT.activeTab == "one-month") {
             if (this.GLOBAL_DATA_OBJECT.activeCurrency == "usd") {
-                this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_1mo_usd"]);
+                this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_1mo_usd"], reRender);
             } else if (this.GLOBAL_DATA_OBJECT.activeCurrency == "ada") {
-                this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_1mo_ada"]);
+                this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_1mo_ada"], reRender);
 
             }
 
         } else if (this.GLOBAL_DATA_OBJECT.activeTab == "one-year") {
             if (this.GLOBAL_DATA_OBJECT.activeCurrency == "usd") {
-                this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_1y_usd"]);
+                this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_1y_usd"], reRender);
             } else if (this.GLOBAL_DATA_OBJECT.activeCurrency == "ada") {
-                this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_1y_ada"]);
+                this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_1y_ada"], reRender);
 
             }
 
         }
         else if (this.GLOBAL_DATA_OBJECT.activeTab == "all") {
             if (this.GLOBAL_DATA_OBJECT.activeCurrency == "usd") {
-                this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_all_usd"]);
+                this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_all_usd"], reRender);
             } else if (this.GLOBAL_DATA_OBJECT.activeCurrency == "ada") {
-                this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_all_ada"]);
+                this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_all_ada"], reRender);
 
             }
 
         }
     }
-    createLineChart(element, data) {
+
+    createLineChart(element, data, resize=false) {
+        // ** clear chart on view change
+        if (element.firstChild && resize) {
+            element.removeChild(element.firstChild);
+            this.GLOBAL_DATA_OBJECT.renderNewChart = true;
+          }
+
         let chartHeight = parseFloat(window.getComputedStyle(element).height);
         let chartWidth = parseFloat(window.getComputedStyle(element).width);
-        // Convert object to array of objects
-        const dataArray = Object.entries(data).map(([date, value]) => ({ date, value }));
 
-        // Sort the array by date in ascending order
-        dataArray.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-        // Convert the sorted array back to object
-        const sortedChartData = dataArray.reduce((acc, { date, value }) => {
-            acc[date] = value;
-            return acc;
-        }, {});
-
+        const formattedData = this.formatData(data);
 
         if (this.GLOBAL_DATA_OBJECT.renderNewChart) {
             // Create a new Lightweight Chart
             this.GLOBAL_DATA_OBJECT.chart = LightweightCharts.createChart(element, {
                 width: chartWidth,
-                height: chartHeight, // Set the desired height
+                height: chartHeight,
                 layout: {
-                    background: {
-                        type: 'solid',
-                        color: '#FFF',
-                    },
-                    borderVisible: true,
+                    backgroundColor: '#ffffff',
+                    textColor: 'rgba(33, 56, 77, 1)',
                 },
                 grid: {
-                    horzLines: {
-                        color: 'transparent', // Hide horizontal grid lines
-                    },
                     vertLines: {
-                        color: 'transparent', // Hide vertical grid lines
+                        color: 'rgba(197, 203, 206, 0.0)',
+                    },
+                    horzLines: {
+                        color: 'rgba(197, 203, 206, 0.0)',
+                    },
+                },
+                leftPriceScale: {
+                    visible: true,
+                    priceFormat: {
+                        type: 'custom',
+                        formatter: (price) => parseFloat(price).toFixed(5), // Ensures 5 decimal places
+                    },
+                    scaleMargins: {
+                        top: 0.1,
+                        bottom: 0.2,
                     },
                 },
                 rightPriceScale: {
-                    visible: true, // Hide the right price scale
                     borderVisible: false,
+                },
+                leftPriceScale: {
+                    borderVisible: false,
+                },
+                priceScale: {
+                    autoScale: false, // Disable auto-scaling
                 },
                 timeScale: {
-                    visible: true, // Hide the time scale
                     borderVisible: false,
+                    timeVisible: true,
                 },
+                crosshair: {
+                    mode: LightweightCharts.CrosshairMode.Normal,
+                },
+                handleScroll: false, // Disable scroll events
+                handleScale: false, // Disable zoom events
+
             });
 
-            const chartData = this.formatData(sortedChartData);
+            this.GLOBAL_DATA_OBJECT.chart.subscribeCrosshairMove(function (param) {
+                if (param === undefined || param.seriesPrices === undefined) {
+                    return;
+                }
+            });
 
             this.GLOBAL_DATA_OBJECT.areaSeries = this.GLOBAL_DATA_OBJECT.chart.addAreaSeries({
-                lineColor: '#3861F6',
-                topColor: '#BCCBFB',
-                bottomColor: 'rgb(240 243 254)',
-                priceLineVisible: false,
+                topColor: '#dfd4ff',
+                bottomColor: '#dfd4ff0f',
+                lineColor: '#4D3C80',
+                lineWidth: 1,
+                priceFormat: {
+                    type: 'custom',
+                    formatter: (price) => parseFloat(price).toFixed(5),
+                },
+                lastValueVisible: true,
+                priceLineVisible: true,
+            })
+            this.GLOBAL_DATA_OBJECT.areaSeries.setData(formattedData);
 
-            });
-            this.GLOBAL_DATA_OBJECT.areaSeries.setData(chartData);
-        }
-
-        if (!this.GLOBAL_DATA_OBJECT.renderNewChart) {
-            const chartData = this.formatData(sortedChartData);
-            this.GLOBAL_DATA_OBJECT.areaSeries.setData(chartData);
+        } else {
+            this.GLOBAL_DATA_OBJECT.areaSeries.setData(formattedData);
         }
 
         this.GLOBAL_DATA_OBJECT.chart.timeScale().fitContent();
-
-
-
     }
+
 
     downloadChart() {
         const imageDataURL = this.GLOBAL_DATA_OBJECT.chart.takeScreenshot();
@@ -461,9 +484,14 @@ class RENDERDATA {
         for (const timestamp in dataObject) {
             if (dataObject.hasOwnProperty(timestamp)) {
                 const value = dataObject[timestamp];
-                formattedData.push({ time: this.convertTimeDate(new Date(timestamp)), value });
+                // Ensure the value is a float with 5 decimal places
+                const formattedValue = parseFloat(value).toFixed(5);
+                formattedData.push({ time: this.convertTimeDate(timestamp), value: formattedValue });
             }
         }
+
+        // Sort the formatted data by time in ascending order
+        formattedData.sort((a, b) => a.time - b.time);
 
         return formattedData;
     }
@@ -472,14 +500,10 @@ class RENDERDATA {
         // Parse the input time string into a Date object
         let date = new Date(inputTime);
 
-        // Get the Unix timestamp (milliseconds since January 1, 1970)
-        let timestamp = date.getTime();
-
-        // Convert milliseconds to seconds
-        timestamp = Math.floor(timestamp / 1000);
+        // Convert the date to a Unix timestamp (seconds since January 1, 1970)
+        let timestamp = Math.floor(date.getTime() / 1000);
 
         return timestamp;
-
     }
 
     formatNumberWithCommas(number, isUSCurrency) {
@@ -517,23 +541,24 @@ class RENDERDATA {
         return token?.toString()?.startsWith("-");
     }
 
-    reduceNumber(num) {
-        // Convert number to string
-        let numStr = num.toString();
+    reduceNumber(price) {
+        const decimalPlaces = String(price) // Calculate the number of decimal places
+        const stringNumber = price.toFixed(decimalPlaces.length); // Use the calculated number of decimal places
+        const splitToZeros = stringNumber?.split(".");
+        const numberBeforeDecimal = splitToZeros[0];
+        const numberAfterDecimal = parseFloat(String(splitToZeros[1])?.replace(/0/g, ''));
+        const leadingZeros = Math.ceil(Math.log10(1 / price));
+        if (leadingZeros > 5) {
+            // Generate the format string with leading zeros
+            const formatString = `${"0".repeat(leadingZeros).length - 1}`;
+            console.log(formatString)
 
-        // Find the position of the decimal point
-        let decimalIndex = numStr.indexOf('.');
+            return `${numberBeforeDecimal}.0<sub>${formatString}</sub>${numberAfterDecimal}`
 
-        // If decimal point exists
-        if (decimalIndex !== -1) {
-            // Keep only three digits after the decimal point
-            numStr = parseFloat(numStr).toFixed(6).slice(0, decimalIndex + 5);
-
-            // Remove any trailing zeros beyond the third digit
-            numStr = numStr.replace(/(\.\d*?[1-9])0+$/, '$1');
+        } else {
+            // If the price is not lower than the threshold, simply return the price with 2 decimals
+            return parseFloat(parseFloat(price).toFixed(5)).toString();
         }
-
-        return numStr;
     }
 
     formatNumber(num, removeNeg) {
@@ -545,6 +570,11 @@ class RENDERDATA {
         } else {
             return num?.toFixed(2);
         }
+    }
+
+    handleViewportResize(entries) {
+            this.$wrapperToShow.style.opacity = "1";
+            this.renderDataOnChart(true);
     }
 }
 
