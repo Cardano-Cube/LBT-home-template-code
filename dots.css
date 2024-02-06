@@ -59,10 +59,27 @@
     bottom: 20px;
     padding-left: 0;
 }
-.three-col_mobile-slider-wrapper{
-    overflow: visible !important;
-}
 
+@media screen and (max-width: 320px){
+.three-col_cell {
+    max-width: 250px;
+}
+}
+@media screen and (max-width: 767px) and (min-width:670px){
+.three-col_cell {
+    max-width: 600px;
+}
+}
+@media screen and (max-width: 670px) and (min-width:582px){
+.three-col_cell {
+    max-width: 500px;
+}
+}
+@media screen and (max-width: 581px) and (min-width:480px){
+.three-col_cell {
+    max-width: 450px;
+}
+}
 /* Fix for dexhunter */
 #dexhunter-container :is(.dhs-pt-3){
     overflow: scroll;
