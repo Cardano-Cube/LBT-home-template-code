@@ -92,6 +92,7 @@ function MobileSlider(){
             speed: 500,
             fade: false,
             centerMode: true,
+            variableWidth: true,
             dots: true,
             arrows: false,
             prevArrow: null,
