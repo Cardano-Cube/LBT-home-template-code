@@ -66,10 +66,13 @@ let sliderObj = {
 new addSlickSlider(sliderObj);
  
 function MobileSlider(){
+    let desktopSlider = document.querySelector("[slider-parent='desktop']");
+    let desktopSliderWrapper = desktopSlider?.parentElement;
     let mobileParent = document.querySelector("[slider-parent='mobile']");
     let cmsWrapper = document.querySelectorAll("[item-to='extract']");
     let toInject = mobileParent?.querySelector("[slick-slider='slider-child']");
     let wrapperToClean = toInject.querySelector("[promoted='wrapper']");
+    let promotedParent = wrapperToClean?.parentElement;
     let slideToClone = mobileParent?.querySelector("[slide-to='clone']");
 
     wrapperToClean.remove();
@@ -82,6 +85,27 @@ function MobileSlider(){
         })
         slideToClone.remove();
         
+        let sliderObjMob = {
+            sliderParent: document.querySelectorAll("[slider-parent='mobile']"),
+            slidesToShow: 1,
+            slidesToScroll: 1, //This won't work when center mode in on/true.
+            infinite: true,
+            autoplay: false,
+            autoplaySpeed: 3000,
+            speed: 500,
+            fade: false,
+            centerMode: true,
+            variableWidth: true,
+            dots: true,
+            arrows: false,
+            prevArrow: null,
+            nextArrow: null,
+            responsive: 1,
+        }
+       new addSlickSlider(sliderObjMob)
+    }else{
+        desktopSliderWrapper.remove();
+        promotedParent.remove();
         let sliderObjMob = {
             sliderParent: document.querySelectorAll("[slider-parent='mobile']"),
             slidesToShow: 1,
