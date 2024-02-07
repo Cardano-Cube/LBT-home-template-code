@@ -20,7 +20,7 @@ class RENDERDATA {
 
         this.$mainDropDownWrapper = this.$mainTokenDom?.querySelector("[home-wrapper='dropdown']");
         this.$activeComponent = this.$mainDropDownWrapper?.querySelector("[dropdown-active='component']");
-        this.$allCurrencyCategory = this.$mainDropDownWrapper?.querySelectorAll("[dropdown]");
+        this.$allCurrencyCategory = [...this.$mainDropDownWrapper?.querySelectorAll("[dropdown]")];
         this.$activeCurrencyImageElement = this.$activeComponent?.querySelector("img");
         this.$activeCurrencyText = this.$activeComponent?.querySelector(".tabs_dropdown-text");
 
@@ -42,6 +42,7 @@ class RENDERDATA {
             renderNewChart: true,
             chart: null,
             areaSeries: null,
+            cookieName: "currentCurrency",
         }
 
         this.loadTokenDataAPI = "https://cron-jobs.milan-houter.workers.dev/";
@@ -72,14 +73,8 @@ class RENDERDATA {
             this.$allCurrencyCategory.forEach(currency => {
                 currency.addEventListener("click", (evt) => {
                     let selectedCurrencyElement = evt.currentTarget;
-                    let selectedCurrency = selectedCurrencyElement?.getAttribute("dropdown");
-                    let selectedCurrencyName = selectedCurrencyElement.textContent;
-                    let selectedCurrencyImage = selectedCurrencyElement?.querySelector("img")?.getAttribute("src");
-
-                    this.$activeCurrencyImageElement.removeAttribute("srcset");
-                    this.$activeCurrencyImageElement.setAttribute("src", selectedCurrencyImage);
-                    this.$activeCurrencyText.textContent = selectedCurrencyName;
-                    this.GLOBAL_DATA_OBJECT.activeCurrency = selectedCurrency;
+                    this.updateDropDown(selectedCurrencyElement)
+                    this.updateCookie(this.GLOBAL_DATA_OBJECT.cookieName, this.GLOBAL_DATA_OBJECT.activeCurrency, 30);
 
                     this.GLOBAL_DATA_OBJECT.renderNewChart = false;
                     this.renderDataOnChart();
@@ -119,6 +114,12 @@ class RENDERDATA {
         if (Object.keys(extractData).length > 0) {
             this.GLOBAL_DATA_OBJECT.tokenData = extractData;
 
+            this.GLOBAL_DATA_OBJECT.activeCurrency = this.checkCookie(this.GLOBAL_DATA_OBJECT.cookieName) ?? "usd";
+            this.dropDownCurrency = this.$allCurrencyCategory.filter(item => item.getAttribute("dropdown") === this.GLOBAL_DATA_OBJECT.activeCurrency);
+            if (this.dropDownCurrency?.length > 0) {
+                this.updateDropDown(this.dropDownCurrency[0])
+            }
+
             this.renderDataOnDom(false);
             this.renderDataOnChart();
             this.renderSwapper();
@@ -130,21 +131,32 @@ class RENDERDATA {
         }
     }
 
+    updateDropDown(elementToActive) {
+        let selectedCurrency = elementToActive?.getAttribute("dropdown");
+        let selectedCurrencyName = elementToActive.textContent;
+        let selectedCurrencyImage = elementToActive?.querySelector("img")?.getAttribute("src");
+
+        this.$activeCurrencyImageElement.removeAttribute("srcset");
+        this.$activeCurrencyImageElement.setAttribute("src", selectedCurrencyImage);
+        this.$activeCurrencyText.textContent = selectedCurrencyName;
+        this.GLOBAL_DATA_OBJECT.activeCurrency = selectedCurrency;
+    }
+
     renderSwapper() {
         if (this.GLOBAL_DATA_OBJECT.tokenData["asset_id"]) {
             let scriptElement = document.createElement("script");
             scriptElement.type = "module";
             scriptElement.innerHTML = `ReactDOM.render( React.createElement( dexhunterSwap, {"orderTypes":["SWAP","LIMIT"],"defaultToken":"${this.GLOBAL_DATA_OBJECT.tokenData["asset_id"]}","colors":{"background":"#FFFFFF","containers":"#F6F6F9","subText":"#859DA2","mainText":"#11424A","buttonText":"#FFFFFF","accent":"#00D061"},"theme":"light","width":"100%","partnerCode":"cardanocube.io616464723171396666367678737577656775683370667135716b6164756361746a65343468346a6437373678637a7266377466346c77733564666d6a6c68687133356c72717865367539633575667a7a733361306479357a3433746c32377466737a3875366c7ada39a3ee5e6b4b0d3255bfef95601890afd80709","partnerName":"CardanoCube.io"} ), document.getElementById('dexhunter-root') );`;
             document.body.appendChild(scriptElement);
-        } else {
+        }
             this.$showBackupComponent.classList.remove("hide-wrapper");
             let decimalAddedTotalSupply = this.GLOBAL_DATA_OBJECT.tokenData["total_supply"] && this.cutZeros(this.GLOBAL_DATA_OBJECT.tokenData["total_supply"], this.GLOBAL_DATA_OBJECT.tokenData["decimals"]);
 
             let total_supply = decimalAddedTotalSupply
-            this.$totalSupplyAbout.textContent = total_supply
+            this.$totalSupplyAbout.innerHTML =this.convertToInternationalCurrencySystem(total_supply) + " " + this.$tokenSlug.textContent;
 
             this.$releaseDateAbout.textContent = this.GLOBAL_DATA_OBJECT.tokenData["created_date"] && new Date(this.GLOBAL_DATA_OBJECT.tokenData["created_date"]).getFullYear();
-        }
+        
     }
     renderDataOnDom() {
         if (this.GLOBAL_DATA_OBJECT.activeCurrency == "usd") {
@@ -225,7 +237,7 @@ class RENDERDATA {
 
         }
         else if (this.GLOBAL_DATA_OBJECT.activeCurrency == "ada") {
-            this.$tokenPriceElement.innerHTML = this.reduceNumber(this.GLOBAL_DATA_OBJECT.tokenData?.price_in_ada) + "₳";
+            this.$tokenPriceElement.innerHTML = this.reduceNumber(this.GLOBAL_DATA_OBJECT.tokenData?.price_in_ada)+ "<span style='font-weight:500;'>₳</span>";
 
             if (this.GLOBAL_DATA_OBJECT.activeTab == "one-day") {
                 this.$changePercentElement.textContent = this.GLOBAL_DATA_OBJECT.tokenData["24h_change_ada"] && this.formatNumber(this.GLOBAL_DATA_OBJECT.tokenData["24h_change_ada"], true) + "%"
@@ -338,8 +350,10 @@ class RENDERDATA {
     renderDataOnChart(reRender) {
         if (this.GLOBAL_DATA_OBJECT.activeTab == "one-day") {
             if (this.GLOBAL_DATA_OBJECT.activeCurrency == "usd") {
+                console.log(this.GLOBAL_DATA_OBJECT.tokenData["chart_24h_usd"])
                 this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_24h_usd"], reRender);
             } else if (this.GLOBAL_DATA_OBJECT.activeCurrency == "ada") {
+                console.log(this.GLOBAL_DATA_OBJECT.tokenData["chart_24h_ada"])
                 this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_24h_ada"], reRender);
 
             }
@@ -409,17 +423,6 @@ class RENDERDATA {
                         color: 'rgba(197, 203, 206, 0.0)',
                     },
                 },
-                leftPriceScale: {
-                    visible: true,
-                    priceFormat: {
-                        type: 'custom',
-                        formatter: (price) => parseFloat(price).toFixed(5), // Ensures 5 decimal places
-                    },
-                    scaleMargins: {
-                        top: 0.1,
-                        bottom: 0.2,
-                    },
-                },
                 rightPriceScale: {
                     borderVisible: false,
                 },
@@ -459,6 +462,14 @@ class RENDERDATA {
                 lastValueVisible: true,
                 priceLineVisible: true,
             })
+            
+            this.GLOBAL_DATA_OBJECT.chart.priceScale('right').applyOptions({
+                scaleMargins: {
+                    top: 0.2,
+                    bottom: 0.3,
+                },
+            });
+
             this.GLOBAL_DATA_OBJECT.areaSeries.setData(formattedData);
 
         } else {
@@ -575,6 +586,30 @@ class RENDERDATA {
     handleViewportResize(entries) {
             this.$wrapperToShow.style.opacity = "1";
             this.renderDataOnChart(true);
+    }
+
+    checkCookie(cookieName) {
+        // Split document.cookie into individual cookies
+        let cookies = document.cookie.split(';');
+        // Loop through the cookies
+        for (let i = 0; i < cookies.length; i++) {
+            // Split the cookie into name and value
+            let cookie = cookies[i].trim().split('=');
+            // Check if the cookie name matches the provided name
+            if (cookie[0] === cookieName) {
+                // Cookie exists, return its value
+                return cookie[1];
+            }
+        }
+        // Cookie does not exist
+        return null;
+    }
+
+    updateCookie(cookieName, cookieValue, expirationDays) {
+        let d = new Date();
+        d.setTime(d.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
+        let expires = "expires=" + d.toUTCString();
+        document.cookie = cookieName + "=" + cookieValue + ";" + expires + ";path=/";
     }
 }
 
