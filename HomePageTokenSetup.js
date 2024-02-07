@@ -330,9 +330,8 @@ class LOADANDRENDERTOKENS {
                         tokenMonthChange.classList.add("is-high")
                     }
 
-                    console.log(this.reduceNumber(token.price_in_usd))
 
-                    tokenPrice.innerHTML = `$ ${this.reduceNumber(token.price_in_usd)}`;
+                    tokenPrice.innerHTML = `$${this.reduceNumber(token.price_in_usd)}`;
                     tokenMarketCap.textContent = "not available"
                     tokenMarketMobile.textContent = "not available"
                     tokenDayChange.textContent = token["24h_change_usd"] && this.formatNumber(token["24h_change_usd"], true) + "%";
@@ -373,13 +372,13 @@ class LOADANDRENDERTOKENS {
                         tokenMonthChange.classList.add("is-high")
                     }
 
-                    tokenPrice.textContent = this.reduceNumber(token.price_in_ada) + "₳";
+                    tokenPrice.innerHTML = this.reduceNumber(token.price_in_ada) + "<span style='font-weight:500;'>₳</span>";
                     tokenMarketCap.textContent = "not available"
                     tokenMarketMobile.textContent = "not available"
                     tokenDayChange.textContent = token["24h_change_ada"] && this.formatNumber(token["24h_change_ada"], true) + "%";
                     tokenWeekChange.textContent = token["7d_change_ada"] && this.formatNumber(token["7d_change_ada"], true) + "%";
                     tokenMonthChange.textContent = token["1mo_change_ada"] && this.formatNumber(token["1mo_change_ada"], true) + "%";
-                    tokenVolume.textContent = this.formatNumberWithCommas(token["24h_vol_usd"]) + "₳";
+                    tokenVolume.innerHTML = this.formatNumberWithCommas(token["24h_vol_usd"]) +"<span style='font-weight:500;'>₳</span>";
 
                     this.createLineChart(tokenChartWrapper, token["chart_7d_ada"], token["7d_change_ada"]);
                 }
@@ -564,39 +563,24 @@ class LOADANDRENDERTOKENS {
         }
     }
 
-    reduceNumber(value) {
-        let valueStr = value.toString();
-        let [integerPart, decimalPart] = valueStr.includes('.') ? valueStr.split('.') : [valueStr, ''];
-        let formattedNumber = '';
-      
-        if (decimalPart.startsWith('0') && decimalPart.length > 1) {
-          // Count leading zeros in the decimal part
-          let leadingZerosCount = decimalPart.match(/^0*/)[0].length;
-      
-          // Calculate the significant digits including leading zeros
-          let significantDigits = leadingZerosCount + 4; // 4 significant digits including leading zeros
-      
-          // Round the number to the total count of significant digits
-          let roundedValue = Number(value).toFixed(significantDigits);
-      
-          // Remove trailing zeros after rounding, if any
-          roundedValue = parseFloat(roundedValue).toString();
-      
-          // Split again in case rounding changed the structure
-          [integerPart, decimalPart] = roundedValue.split('.');
-      
-          // Format with leading zeros in decimal if they still exist
-          if (decimalPart && decimalPart.startsWith('0')) {
-            formattedNumber = `${integerPart}.${decimalPart}`;
-          } else {
-            formattedNumber = roundedValue;
-          }
+    reduceNumber(price) {
+        const decimalPlaces = String(price) // Calculate the number of decimal places
+        const stringNumber = price.toFixed(decimalPlaces.length); // Use the calculated number of decimal places
+        const splitToZeros = stringNumber?.split(".");
+        const numberBeforeDecimal = splitToZeros[0];
+        const numberAfterDecimal = parseFloat(String(splitToZeros[1])?.replace(/0/g, ''));
+        const getThreeDigits = numberAfterDecimal?.toString().slice(0,3);
+        const leadingZeros = Math.ceil(Math.log10(1 / price));
+        if (leadingZeros > 5) {
+            // Generate the format string with leading zeros
+            const formatString = `${"0".repeat(leadingZeros).length - 1}`;
+
+            return `${numberBeforeDecimal}.0<sub>${formatString}</sub>${getThreeDigits}`
+
         } else {
-          // For numbers without leading zeros in the decimal part, simply round to four significant figures
-          formattedNumber = parseFloat(parseFloat(value).toFixed(3)).toString();
+            // If the price is not lower than the threshold, simply return the price with 2 decimals
+            return parseFloat(parseFloat(price).toFixed(3)).toString();
         }
-      
-        return formattedNumber;
     }
 
     clearDom(wrapper) {
