@@ -40,9 +40,9 @@
     display: flex;
     flex: 0 0 auto;
 }
-[trending-token="wrapper"]{
+/* [trending-token="wrapper"]{
     opacity: 1 !important;
-}
+} */
 
 [slider-parent="mobile"] [slick-slider="bread-crums-box"]{
     display: flex;
