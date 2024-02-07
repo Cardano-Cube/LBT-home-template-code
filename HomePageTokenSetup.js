@@ -46,7 +46,7 @@ class LOADANDRENDERTOKENS {
             activeCurrency: "usd",
             cookieName: "currentCurrency",
             tokensData: null,
-            tokensToRender: 5,
+            tokensToRender: 25,
             topFiftyTokens: [],
             trendingTokens: [],
             topGainerTokens: [],
@@ -100,7 +100,7 @@ class LOADANDRENDERTOKENS {
                 tokenCode = token.asset;
                 matchDomElement = this.$tokenItem.filter(tokenDom => {
                     tokenCodeElement = tokenDom?.querySelector("[token-item='type']");
-                    console.log(tokenCodeElement)
+
                     return (tokenCode == tokenCodeElement?.textContent)
                 })
                 if (matchDomElement != null && matchDomElement?.length > 0) {
