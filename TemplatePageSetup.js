@@ -315,13 +315,13 @@ class RENDERDATA {
         }
 
         // ** Render other data
-        this.$marketCapElement.textContent = "Not-available";
+        this.$marketCapElement.textContent = "-";
 
-        this.$dilutedMarketCapElement.textContent = "Not-available";
+        this.$dilutedMarketCapElement.textContent = "-";
 
-        this.$circulatingSupplyElement.textContent = "Not-available";
+        this.$circulatingSupplyElement.textContent = "-";
 
-        this.$circulatingPercentElement.textContent = "Not-available";
+        this.$circulatingPercentElement.textContent = "-";
 
         let decimalAddedTotalSupply = this.GLOBAL_DATA_OBJECT.tokenData["total_supply"] && this.cutZeros(this.GLOBAL_DATA_OBJECT.tokenData["total_supply"], this.GLOBAL_DATA_OBJECT.tokenData["decimals"]);
 
