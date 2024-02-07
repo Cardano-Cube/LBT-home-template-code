@@ -465,8 +465,8 @@ class RENDERDATA {
             
             this.GLOBAL_DATA_OBJECT.chart.priceScale('right').applyOptions({
                 scaleMargins: {
-                    top: 0.2,
-                    bottom: 0.3,
+                    top: 0.35,
+                    bottom: 0.2,
                 },
             });
 
