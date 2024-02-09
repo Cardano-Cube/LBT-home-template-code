@@ -230,6 +230,9 @@ class RENDERDATA {
                 this.$desktopSwapper.style.display = "none";
 
             } else {
+                this.$allTabMenuArray?.forEach((tab, index) => {
+                    if(index == 1)tab.style.display = "flex";
+                });
                 this.$desktopAboutWrapper.style.display = "none"
                 this.$desktopSwapper.style.display = "block";
 
@@ -237,11 +240,9 @@ class RENDERDATA {
 
             this.$backupPopupTrigger.style.display = "none";
         } else {
-            this.$allTabMenuArray?.forEach(tab => {
-                tab.style.display = "none";
+            this.$allTabMenuArray?.forEach((tab, index) => {
+                if(index == 1)tab.style.display = "none";
             });
-
-
             if (this.GLOBAL_DATA_OBJECT?.tokenData?.asset_id == undefined && this.$assetID == "") {
                 this.$backupPopupTrigger.style.display = "none";
                 this.$desktopSwapper.style.display = "none"
@@ -685,8 +686,8 @@ class RENDERDATA {
                 tab.style.display = "flex"
             })
         } else {
-            this.$allTabMenuArray?.forEach(tab => {
-                tab.style.display = "none"
+            this.$allTabMenuArray?.forEach((tab, index) => {
+                if(index == 1)tab.style.display = "none"
             })
             this.$desktopSwapper.style.display = "none";
         }
