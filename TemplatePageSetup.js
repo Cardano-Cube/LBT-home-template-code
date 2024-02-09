@@ -553,7 +553,7 @@ class RENDERDATA {
                 lineWidth: 1,
                 priceFormat: {
                     type: 'custom',
-                    formatter: (price) => parseFloat(price).toFixed(5),
+                    formatter: (price) => parseFloat(price).toFixed(3),
                 },
                 lastValueVisible: true,
                 priceLineVisible: true,
@@ -565,6 +565,8 @@ class RENDERDATA {
                     bottom: 0.2,
                 },
                 mode: 1,
+                invertScale:true,
+
             });
 
             this.GLOBAL_DATA_OBJECT.areaSeries.setData(formattedData);
