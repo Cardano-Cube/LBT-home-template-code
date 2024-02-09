@@ -527,7 +527,6 @@ class RENDERDATA {
                 },
                 priceScale: {
                     autoScale: false, // Disable auto-scaling
-                    mode:1,
                 },
                 timeScale: {
                     borderVisible: false,
@@ -565,6 +564,9 @@ class RENDERDATA {
                     top: 0.35,
                     bottom: 0.2,
                 },
+                priceScale:{
+                    mode:1,
+                }
             });
 
             this.GLOBAL_DATA_OBJECT.areaSeries.setData(formattedData);
