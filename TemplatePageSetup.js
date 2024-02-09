@@ -39,8 +39,9 @@ class RENDERDATA {
         this.$mobileSwapper = document.getElementById("dexhunter-container");
         this.$desktopAboutWrapper = document.querySelector("[show-if-no-token='desktop']");
         this.$mobileAboutWrapper = document.querySelector("[show-if-no-token='mobile']");
-        this.$allTabMenuArray =  document.querySelectorAll(".swapper_tabs-menu");
+        this.$allTabMenuArray = document.querySelectorAll(".swapper_tabs-menu");
         this.$backupPopupTrigger = document.querySelector(".for-popup-desk");
+        this.$rightSideContainer = document.querySelector("[right='wrapper']");
 
         this.GLOBAL_DATA_OBJECT = {
             activeCurrency: "usd",
@@ -134,9 +135,11 @@ class RENDERDATA {
             this.renderSwapper();
 
             this.$wrapperToShow.style.opacity = 1;
-            
+
             this.$desktopAboutWrapper.style.display = "none";
             this.$mobileAboutWrapper.style.display = "none";
+            this.$rightSideContainer.style.opacity = 1;
+
 
             this.$loader.remove();
             this.viewportObserver.observe(document.body);
@@ -150,6 +153,8 @@ class RENDERDATA {
     handleError() {
         this.renderSwapper();
         this.errorObserver.observe(document.body);
+        this.$rightSideContainer.style.opacity = 1;
+
     }
 
     updateDropDown(elementToActive) {
@@ -214,33 +219,38 @@ class RENDERDATA {
 
     }
 
-    HandleShowAndHideElement(){
-        if(window.screen.width>1279){
+    HandleShowAndHideElement() {
+        if (window.screen.width > 1279) {
             this.$desktopSwapper.style.display = "block"
-            if(this.GLOBAL_DATA_OBJECT?.tokenData?.asset_id == undefined && this.$assetID == ""){
-                this.$allTabMenuArray?.forEach(tab =>{
-                    tab.style.display="none";
+            if (this.GLOBAL_DATA_OBJECT?.tokenData?.asset_id == undefined && this.$assetID == "") {
+                this.$allTabMenuArray?.forEach(tab => {
+                    tab.style.display = "none";
                 });
                 this.$backupPopupTrigger.style.display = "none";
-            this.$desktopSwapper.style.display = "none"
+                this.$desktopSwapper.style.display = "none";
 
-            }else{
-                this.$desktopAboutWrapper.style.display="none"
+            } else {
+                this.$desktopAboutWrapper.style.display = "none"
+                this.$desktopSwapper.style.display = "block";
+
             }
 
             this.$backupPopupTrigger.style.display = "none";
-        }else{
-            this.$allTabMenuArray?.forEach(tab =>{
-                tab.style.display="none";
+        } else {
+            this.$allTabMenuArray?.forEach(tab => {
+                tab.style.display = "none";
             });
-            this.$desktopSwapper.style.display = "none"
-            if(this.GLOBAL_DATA_OBJECT?.tokenData?.asset_id == undefined && this.$assetID == ""){
-            this.$backupPopupTrigger.style.display = "none";
-            }else{
-            this.$backupPopupTrigger.style.display = "flex";
+
+
+            if (this.GLOBAL_DATA_OBJECT?.tokenData?.asset_id == undefined && this.$assetID == "") {
+                this.$backupPopupTrigger.style.display = "none";
+                this.$desktopSwapper.style.display = "none"
+            } else {
+                this.$backupPopupTrigger.style.display = "flex";
             this.$desktopAboutWrapper.style.display="block"
+            this.$desktopSwapper.style.display = "none"
             }
-            this.$mobileAboutWrapper.style.display="none"
+            this.$mobileAboutWrapper.style.display = "none"
         }
     }
     renderDataOnDom() {
@@ -669,13 +679,13 @@ class RENDERDATA {
 
     handleViewportResize(entries) {
         this.$wrapperToShow.style.opacity = "1";
-        if(window.screen.width>1279){
+        if (window.screen.width > 1279) {
             this.$desktopSwapper.style.display = "block";
-            this.$allTabMenuArray?.forEach(tab =>{
+            this.$allTabMenuArray?.forEach(tab => {
                 tab.style.display = "flex"
             })
-        }else{
-            this.$allTabMenuArray?.forEach(tab =>{
+        } else {
+            this.$allTabMenuArray?.forEach(tab => {
                 tab.style.display = "none"
             })
             this.$desktopSwapper.style.display = "none";
@@ -683,7 +693,7 @@ class RENDERDATA {
         this.renderDataOnChart(true);
     }
 
-    handleViewPortOnError(entries){
+    handleViewPortOnError(entries) {
         this.HandleShowAndHideElement();
     }
 
