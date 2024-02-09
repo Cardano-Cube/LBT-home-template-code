@@ -578,8 +578,16 @@ class LOADANDRENDERTOKENS {
             return `${numberBeforeDecimal}.0<sub>${formatString}</sub>${getThreeDigits}`
 
         } else {
-            // If the price is not lower than the threshold, simply return the price with 2 decimals
-            return parseFloat(parseFloat(price).toFixed(3)).toString();
+            // Check if the price has leading zeros
+    if (numberBeforeDecimal.startsWith('0')) {
+        // Generate the format string with leading zeros
+        const formatString = `${"0".repeat(numberBeforeDecimal.length - 1)}`;
+        // Return the modified number with 3 decimals after the last zero
+        return `${numberBeforeDecimal}.0<sub>${formatString}</sub>${getThreeDigits}`;
+    } else {
+        // If the price is not lower than the threshold and does not have leading zeros, simply return the price with 3 decimals
+        return parseFloat(parseFloat(price).toFixed(3)).toString();
+    }
         }
     }
 
