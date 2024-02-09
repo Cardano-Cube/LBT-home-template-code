@@ -595,7 +595,7 @@ class RENDERDATA {
             if (dataObject.hasOwnProperty(timestamp)) {
                 const value = dataObject[timestamp];
                 // Ensure the value is a float with 5 decimal places
-                const formattedValue = parseFloat(value).toFixed(5);
+                const formattedValue = value;
                 formattedData.push({ time: this.convertTimeDate(timestamp), value: formattedValue });
             }
         }
