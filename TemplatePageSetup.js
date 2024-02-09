@@ -527,6 +527,7 @@ class RENDERDATA {
                 },
                 priceScale: {
                     autoScale: false, // Disable auto-scaling
+                    mode:1,
                 },
                 timeScale: {
                     borderVisible: false,
