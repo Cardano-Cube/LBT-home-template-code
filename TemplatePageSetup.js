@@ -231,7 +231,7 @@ class RENDERDATA {
 
             } else {
                 this.$allTabMenuArray?.forEach((tab, index) => {
-                    if(index == 1)tab.style.display = "flex";
+                    if (index == 1) tab.style.display = "flex";
                 });
                 this.$desktopAboutWrapper.style.display = "none"
                 this.$desktopSwapper.style.display = "block";
@@ -241,15 +241,15 @@ class RENDERDATA {
             this.$backupPopupTrigger.style.display = "none";
         } else {
             this.$allTabMenuArray?.forEach((tab, index) => {
-                if(index == 1)tab.style.display = "none";
+                if (index == 1) tab.style.display = "none";
             });
             if (this.GLOBAL_DATA_OBJECT?.tokenData?.asset_id == undefined && this.$assetID == "") {
                 this.$backupPopupTrigger.style.display = "none";
                 this.$desktopSwapper.style.display = "none"
             } else {
                 this.$backupPopupTrigger.style.display = "flex";
-            this.$desktopAboutWrapper.style.display="block"
-            this.$desktopSwapper.style.display = "none"
+                this.$desktopAboutWrapper.style.display = "block"
+                this.$desktopSwapper.style.display = "none"
             }
             this.$mobileAboutWrapper.style.display = "none"
         }
@@ -564,9 +564,7 @@ class RENDERDATA {
                     top: 0.35,
                     bottom: 0.2,
                 },
-                priceScale:{
-                    mode:1,
-                }
+                mode: 1,
             });
 
             this.GLOBAL_DATA_OBJECT.areaSeries.setData(formattedData);
@@ -690,7 +688,7 @@ class RENDERDATA {
             })
         } else {
             this.$allTabMenuArray?.forEach((tab, index) => {
-                if(index == 1)tab.style.display = "none"
+                if (index == 1) tab.style.display = "none"
             })
             this.$desktopSwapper.style.display = "none";
         }
