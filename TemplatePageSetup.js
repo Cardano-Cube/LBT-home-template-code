@@ -216,16 +216,18 @@ class RENDERDATA {
 
     HandleShowAndHideElement(){
         if(window.screen.width>1279){
+            this.$desktopSwapper.style.display = "block"
             if(this.GLOBAL_DATA_OBJECT?.tokenData?.asset_id == undefined && this.$assetID == ""){
                 this.$allTabMenuArray?.forEach(tab =>{
                     tab.style.display="none";
                 });
                 this.$backupPopupTrigger.style.display = "none";
+            this.$desktopSwapper.style.display = "none"
+
             }else{
                 this.$desktopAboutWrapper.style.display="none"
             }
 
-            this.$desktopSwapper.style.display = "block"
             this.$backupPopupTrigger.style.display = "none";
         }else{
             this.$allTabMenuArray?.forEach(tab =>{
