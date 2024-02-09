@@ -552,8 +552,9 @@ class RENDERDATA {
                 lineColor: '#4D3C80',
                 lineWidth: 1,
                 priceFormat: {
-                    type: 'custom',
-                    formatter: (price) => parseFloat(price).toFixed(3),
+                    type: 'price',
+                    // formatter: (price) => parseFloat(price).toFixed(3),
+                    precision:6
                 },
                 lastValueVisible: true,
                 priceLineVisible: true,
