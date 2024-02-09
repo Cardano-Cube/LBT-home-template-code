@@ -378,7 +378,7 @@ class LOADANDRENDERTOKENS {
                     tokenDayChange.textContent = token["24h_change_ada"] && this.formatNumber(token["24h_change_ada"], true) + "%";
                     tokenWeekChange.textContent = token["7d_change_ada"] && this.formatNumber(token["7d_change_ada"], true) + "%";
                     tokenMonthChange.textContent = token["1mo_change_ada"] && this.formatNumber(token["1mo_change_ada"], true) + "%";
-                    tokenVolume.innerHTML = this.formatNumberWithCommas(token["24h_vol_usd"]) +"<span style='font-weight:500;'>₳</span>";
+                    tokenVolume.innerHTML = this.formatNumberWithCommas(token["24h_vol_usd"]) + "<span style='font-weight:500;'>₳</span>";
 
                     this.createLineChart(tokenChartWrapper, token["chart_7d_ada"], token["7d_change_ada"]);
                 }
@@ -443,7 +443,7 @@ class LOADANDRENDERTOKENS {
 
     createLineChart(element, data, checkNegative) {
         // Convert object to array of objects
-       if(data == null)return;
+        if (data == null) return;
         const dataArray = Object.entries(data).map(([date, value]) => ({ date, value }));
 
         // Sort the array by date in ascending order
@@ -564,32 +564,40 @@ class LOADANDRENDERTOKENS {
     }
 
     reduceNumber(price) {
-        const decimalPlaces = String(price) // Calculate the number of decimal places
-        const stringNumber = price.toFixed(decimalPlaces.length); // Use the calculated number of decimal places
-        const splitToZeros = stringNumber?.split(".");
-        const numberBeforeDecimal = splitToZeros[0];
-        const numberAfterDecimal = parseFloat(String(splitToZeros[1])?.replace(/0/g, ''));
-        const getThreeDigits = numberAfterDecimal?.toString().slice(0,3);
-        const leadingZeros = Math.ceil(Math.log10(1 / price));
-        if (leadingZeros > 5) {
-            // Generate the format string with leading zeros
-            const formatString = `${"0".repeat(leadingZeros).length - 1}`;
-
-            return `${numberBeforeDecimal}.0<sub>${formatString}</sub>${getThreeDigits}`
-
+        if (price >= 1) {
+            // If price is greater than or equal to 1, format to three decimal places
+            return price.toFixed(3);
         } else {
-            // Check if the price has leading zeros
-    if (numberBeforeDecimal.startsWith('0')) {
-        // Generate the format string with leading zeros
-        const formatString = `${"0".repeat(numberBeforeDecimal.length - 1)}`;
-        // Return the modified number with 3 decimals after the last zero
-        return `${numberBeforeDecimal}.0<sub>${formatString}</sub>${getThreeDigits}`;
-    } else {
-        // If the price is not lower than the threshold and does not have leading zeros, simply return the price with 3 decimals
-        return parseFloat(parseFloat(price).toFixed(3)).toString();
-    }
+            // Handle fractional part for prices less than 1
+            const stringNumber = price.toString();
+            const splitNumber = stringNumber.split('.');
+            if (splitNumber.length > 1) {
+                const leadingZeros = splitNumber[1].match(/^0*/)[0].length;
+                let significantDigits = splitNumber[1].substring(leadingZeros, leadingZeros + 4); // Aim for 3 significant digits after first non-zero
+    
+                if (leadingZeros === 0) {
+                    // For numbers without leading zeros, keep three digits after decimal
+                    significantDigits = significantDigits.substring(0, 3);
+                    return `0.${significantDigits}`;
+                } else if (leadingZeros >= 1) {
+                    // For numbers with 1 to 4 leading zeros, format with three digits after first non-zero
+                    if (leadingZeros < 5) {
+                        significantDigits = significantDigits.substring(0, 3);
+                        return `0.${'0'.repeat(leadingZeros)}${significantDigits}`;
+                    } else {
+                        // For numbers with 5 or more leading zeros, use <sub> for zero count
+                        significantDigits = significantDigits.substring(0, 4); // Ensure we get four digits for clarity
+                        return `0.0<sub>${leadingZeros}</sub>${significantDigits}`;
+                    }
+                }
+            } else {
+                // If the number doesn't have a fractional part, return it as is
+                return price.toString();
+            }
         }
     }
+    
+    
 
     clearDom(wrapper) {
         // Loop through all child nodes and remove them
@@ -759,17 +767,17 @@ class LOADANDRENDERTOKENS {
 
     handleViewportResize() {
         // window.addEventListener("resize", () => {
-            this.$trendingTokenWrapper.forEach(wrapper => {
-                this.$trendingTokenToInjectWrapper = wrapper?.querySelector("[trending-token='wrapper']");
-                this.$trendingTokenToInjectWrapper.style.opacity = "1";
-            })
-            this.$topGainersWrapper.forEach(wrapper => {
-                this.$topGainerToInjectWrapper = wrapper?.querySelector("[top-gainers='wrapper']");
-                this.$topGainerToInjectWrapper.style.opacity = "1";
-            })
-            this.$promotedWrapper.forEach(wrapper => {
-                wrapper.style.opacity = 1;
-            });
+        this.$trendingTokenWrapper.forEach(wrapper => {
+            this.$trendingTokenToInjectWrapper = wrapper?.querySelector("[trending-token='wrapper']");
+            this.$trendingTokenToInjectWrapper.style.opacity = "1";
+        })
+        this.$topGainersWrapper.forEach(wrapper => {
+            this.$topGainerToInjectWrapper = wrapper?.querySelector("[top-gainers='wrapper']");
+            this.$topGainerToInjectWrapper.style.opacity = "1";
+        })
+        this.$promotedWrapper.forEach(wrapper => {
+            wrapper.style.opacity = 1;
+        });
         // })
 
     }
