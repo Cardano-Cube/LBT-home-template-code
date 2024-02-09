@@ -223,7 +223,7 @@ class LOADANDRENDERTOKENS {
                     this.updateCookie(this.globalObject.cookieName, this.globalObject.activeCurrency, 30);
                     this.splitAndRender(false);
                     this.addDataOnHeroSection();
-
+                    $(this.$mainDropDownWrapper).trigger("w-close");
                 })
             })
         }

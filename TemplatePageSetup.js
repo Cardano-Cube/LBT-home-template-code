@@ -87,6 +87,7 @@ class RENDERDATA {
                     this.GLOBAL_DATA_OBJECT.renderNewChart = false;
                     this.renderDataOnChart();
                     this.renderDataOnDom();
+                    $(this.$mainDropDownWrapper).trigger("w-close")
                 })
             })
         }
