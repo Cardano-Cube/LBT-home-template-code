@@ -553,7 +553,9 @@ class RENDERDATA {
                 lineWidth: 1,
                 priceFormat: {
                     type: 'price',
-                    formatter: (price) => parseFloat(price).toFixed(6),
+                    formatter: (price) => {
+                        console.log(price)
+                        return parseFloat(price).toFixed(6)},
                 },
                 lastValueVisible: true,
                 priceLineVisible: true,
