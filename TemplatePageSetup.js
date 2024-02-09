@@ -31,9 +31,16 @@ class RENDERDATA {
 
         this.$downloadButton = document.querySelector("[token-button='download']");
 
-        this.$showBackupComponent = document.querySelector("[wrapper='about']");
-        this.$releaseDateAbout = document.querySelector("[about-card='date']");
-        this.$totalSupplyAbout = document.querySelector("[about-card='total-supply']");
+        this.$showBackupComponent = document.querySelectorAll("[wrapper='about']");
+        this.$secondDexWrapper = document.querySelector("[asset-id]");
+        this.$assetID = this.$secondDexWrapper?.getAttribute("asset-id");
+
+        this.$desktopSwapper = document.querySelector("[show-if-token='desktop']");
+        this.$mobileSwapper = document.getElementById("dexhunter-container");
+        this.$desktopAboutWrapper = document.querySelector("[show-if-no-token='desktop']");
+        this.$mobileAboutWrapper = document.querySelector("[show-if-no-token='mobile']");
+        this.$allTabMenuArray =  document.querySelectorAll(".swapper_tabs-menu");
+        this.$backupPopupTrigger = document.querySelector(".for-popup-desk");
 
         this.GLOBAL_DATA_OBJECT = {
             activeCurrency: "usd",
@@ -58,6 +65,7 @@ class RENDERDATA {
         }
 
         this.viewportObserver = new ResizeObserver(this.handleViewportResize.bind(this));
+        this.errorObserver = new ResizeObserver(this.handleViewPortOnError.bind(this));
 
 
         this.init();
@@ -110,7 +118,7 @@ class RENDERDATA {
 
     async loadDataFromAPI() {
         let callAPI = await fetch(this.loadTokenDataAPI, this.options).catch(err => console.log(err));
-        let extractData = await callAPI.json();
+        let extractData = callAPI.ok != false && await callAPI.json();
         if (Object.keys(extractData).length > 0) {
             this.GLOBAL_DATA_OBJECT.tokenData = extractData;
 
@@ -125,10 +133,22 @@ class RENDERDATA {
             this.renderSwapper();
 
             this.$wrapperToShow.style.opacity = 1;
+            
+            this.$desktopAboutWrapper.style.display = "none";
+            this.$mobileAboutWrapper.style.display = "none";
+
             this.$loader.remove();
             this.viewportObserver.observe(document.body);
 
         }
+        if (callAPI.ok == false && callAPI.status == 400) {
+            this.handleError();
+        }
+    }
+
+    handleError() {
+        this.renderSwapper();
+        this.errorObserver.observe(document.body);
     }
 
     updateDropDown(elementToActive) {
@@ -143,20 +163,82 @@ class RENDERDATA {
     }
 
     renderSwapper() {
-        if (this.GLOBAL_DATA_OBJECT.tokenData["asset_id"]) {
+        if (this.GLOBAL_DATA_OBJECT?.tokenData?.asset_id) {
             let scriptElement = document.createElement("script");
             scriptElement.type = "module";
             scriptElement.innerHTML = `ReactDOM.render( React.createElement( dexhunterSwap, {"orderTypes":["SWAP","LIMIT"],"defaultToken":"${this.GLOBAL_DATA_OBJECT.tokenData["asset_id"]}","colors":{"background":"#FFFFFF","containers":"#F6F6F9","subText":"#859DA2","mainText":"#11424A","buttonText":"#FFFFFF","accent":"#00D061"},"theme":"light","width":"100%","partnerCode":"cardanocube.io616464723171396666367678737577656775683370667135716b6164756361746a65343468346a6437373678637a7266377466346c77733564666d6a6c68687133356c72717865367539633575667a7a733361306479357a3433746c32377466737a3875366c7ada39a3ee5e6b4b0d3255bfef95601890afd80709","partnerName":"CardanoCube.io"} ), document.getElementById('dexhunter-root') );`;
             document.body.appendChild(scriptElement);
+
+            let scriptSecondElement = document.createElement("script");
+            scriptSecondElement.type = "module";
+            scriptSecondElement.innerHTML = `ReactDOM.render( React.createElement( dexhunterSwap, {"orderTypes":["SWAP","LIMIT"],"defaultToken":"${this.GLOBAL_DATA_OBJECT.tokenData["asset_id"]}","colors":{"background":"#FFFFFF","containers":"#F6F6F9","subText":"#859DA2","mainText":"#11424A","buttonText":"#FFFFFF","accent":"#00D061"},"theme":"light","width":"100%","partnerCode":"cardanocube.io616464723171396666367678737577656775683370667135716b6164756361746a65343468346a6437373678637a7266377466346c77733564666d6a6c68687133356c72717865367539633575667a7a733361306479357a3433746c32377466737a3875366c7ada39a3ee5e6b4b0d3255bfef95601890afd80709","partnerName":"CardanoCube.io"} ), document.getElementById('dexhunter-root-mobile') );`;
+            document.body.appendChild(scriptSecondElement);
+
         }
-            this.$showBackupComponent.classList.remove("hide-wrapper");
-            let decimalAddedTotalSupply = this.GLOBAL_DATA_OBJECT.tokenData["total_supply"] && this.cutZeros(this.GLOBAL_DATA_OBJECT.tokenData["total_supply"], this.GLOBAL_DATA_OBJECT.tokenData["decimals"]);
 
-            let total_supply = decimalAddedTotalSupply
-            this.$totalSupplyAbout.innerHTML =this.convertToInternationalCurrencySystem(total_supply) + " " + this.$tokenSlug.textContent;
+        if (this.$secondDexWrapper != undefined & this.$assetID != "") {
+            let scriptElement = document.createElement("script");
+            scriptElement.type = "module";
+            scriptElement.innerHTML = `ReactDOM.render( React.createElement( dexhunterSwap, {"orderTypes":["SWAP","LIMIT"],"defaultToken":"${this.$assetID}","colors":{"background":"#FFFFFF","containers":"#F6F6F9","subText":"#859DA2","mainText":"#11424A","buttonText":"#FFFFFF","accent":"#00D061"},"theme":"light","width":"100%","partnerCode":"cardanocube.io616464723171396666367678737577656775683370667135716b6164756361746a65343468346a6437373678637a7266377466346c77733564666d6a6c68687133356c72717865367539633575667a7a733361306479357a3433746c32377466737a3875366c7ada39a3ee5e6b4b0d3255bfef95601890afd80709","partnerName":"CardanoCube.io"} ), document.getElementById('dexhunter-root') );`;
+            document.body.appendChild(scriptElement);
 
-            this.$releaseDateAbout.textContent = this.GLOBAL_DATA_OBJECT.tokenData["created_date"] && new Date(this.GLOBAL_DATA_OBJECT.tokenData["created_date"]).getFullYear();
-        
+            let scriptSecondElement = document.createElement("script");
+            scriptSecondElement.type = "module";
+            scriptSecondElement.innerHTML = `ReactDOM.render( React.createElement( dexhunterSwap, {"orderTypes":["SWAP","LIMIT"],"defaultToken":"${this.$assetID}","colors":{"background":"#FFFFFF","containers":"#F6F6F9","subText":"#859DA2","mainText":"#11424A","buttonText":"#FFFFFF","accent":"#00D061"},"theme":"light","width":"100%","partnerCode":"cardanocube.io616464723171396666367678737577656775683370667135716b6164756361746a65343468346a6437373678637a7266377466346c77733564666d6a6c68687133356c72717865367539633575667a7a733361306479357a3433746c32377466737a3875366c7ada39a3ee5e6b4b0d3255bfef95601890afd80709","partnerName":"CardanoCube.io"} ), document.getElementById('dexhunter-root-mobile') );`;
+            document.body.appendChild(scriptSecondElement);
+        }
+
+
+        if (this.$showBackupComponent?.length > 0) {
+            this.$showBackupComponent.forEach(comp => {
+                // comp.classList.remove("hide-wrapper");
+
+                this.$releaseDateAbout = comp.querySelector("[about-card='date']");
+                this.$totalSupplyAbout = comp.querySelector("[about-card='total-supply']");
+
+                let decimalAddedTotalSupply = this.GLOBAL_DATA_OBJECT?.tokenData?.total_supply && this.cutZeros(this.GLOBAL_DATA_OBJECT.tokenData["total_supply"], this.GLOBAL_DATA_OBJECT.tokenData["decimals"]);
+
+
+                let total_supply = decimalAddedTotalSupply
+
+                if (total_supply != undefined) {
+                    this.$totalSupplyAbout.innerHTML = this.convertToInternationalCurrencySystem(total_supply) + " " + this.$tokenSlug.textContent;
+                }
+
+                if (this.GLOBAL_DATA_OBJECT?.tokenData?.created_date != undefined) {
+                    this.$releaseDateAbout.textContent = this.GLOBAL_DATA_OBJECT?.tokenData?.created_date && new Date(this.GLOBAL_DATA_OBJECT.tokenData["created_date"]).getFullYear();
+                }
+            })
+        }
+
+    }
+
+    HandleShowAndHideElement(){
+        if(window.screen.width>1279){
+            if(this.GLOBAL_DATA_OBJECT?.tokenData?.asset_id == undefined && this.$assetID == ""){
+                this.$allTabMenuArray?.forEach(tab =>{
+                    tab.style.display="none";
+                });
+                this.$backupPopupTrigger.style.display = "none";
+            }else{
+                this.$desktopAboutWrapper.style.display="none"
+            }
+
+            this.$desktopSwapper.style.display = "block"
+            this.$backupPopupTrigger.style.display = "none";
+        }else{
+            this.$allTabMenuArray?.forEach(tab =>{
+                tab.style.display="none";
+            });
+            this.$desktopSwapper.style.display = "none"
+            if(this.GLOBAL_DATA_OBJECT?.tokenData?.asset_id == undefined && this.$assetID == ""){
+            this.$backupPopupTrigger.style.display = "none";
+            }else{
+            this.$backupPopupTrigger.style.display = "flex";
+            this.$desktopAboutWrapper.style.display="block"
+            }
+            this.$mobileAboutWrapper.style.display="none"
+        }
     }
     renderDataOnDom() {
         if (this.GLOBAL_DATA_OBJECT.activeCurrency == "usd") {
@@ -237,7 +319,7 @@ class RENDERDATA {
 
         }
         else if (this.GLOBAL_DATA_OBJECT.activeCurrency == "ada") {
-            this.$tokenPriceElement.innerHTML = this.reduceNumber(this.GLOBAL_DATA_OBJECT.tokenData?.price_in_ada)+ "<span style='font-weight:500;'>₳</span>";
+            this.$tokenPriceElement.innerHTML = this.reduceNumber(this.GLOBAL_DATA_OBJECT.tokenData?.price_in_ada) + "<span style='font-weight:500;'>₳</span>";
 
             if (this.GLOBAL_DATA_OBJECT.activeTab == "one-day") {
                 this.$changePercentElement.textContent = this.GLOBAL_DATA_OBJECT.tokenData["24h_change_ada"] && this.formatNumber(this.GLOBAL_DATA_OBJECT.tokenData["24h_change_ada"], true) + "%"
@@ -350,10 +432,10 @@ class RENDERDATA {
     renderDataOnChart(reRender) {
         if (this.GLOBAL_DATA_OBJECT.activeTab == "one-day") {
             if (this.GLOBAL_DATA_OBJECT.activeCurrency == "usd") {
-                console.log(this.GLOBAL_DATA_OBJECT.tokenData["chart_24h_usd"])
+
                 this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_24h_usd"], reRender);
             } else if (this.GLOBAL_DATA_OBJECT.activeCurrency == "ada") {
-                console.log(this.GLOBAL_DATA_OBJECT.tokenData["chart_24h_ada"])
+
                 this.createLineChart(this.$chartWrapper, this.GLOBAL_DATA_OBJECT.tokenData["chart_24h_ada"], reRender);
 
             }
@@ -394,12 +476,12 @@ class RENDERDATA {
         }
     }
 
-    createLineChart(element, data, resize=false) {
+    createLineChart(element, data, resize = false) {
         // ** clear chart on view change
         if (element.firstChild && resize) {
             element.removeChild(element.firstChild);
             this.GLOBAL_DATA_OBJECT.renderNewChart = true;
-          }
+        }
 
         let chartHeight = parseFloat(window.getComputedStyle(element).height);
         let chartWidth = parseFloat(window.getComputedStyle(element).width);
@@ -462,7 +544,7 @@ class RENDERDATA {
                 lastValueVisible: true,
                 priceLineVisible: true,
             })
-            
+
             this.GLOBAL_DATA_OBJECT.chart.priceScale('right').applyOptions({
                 scaleMargins: {
                     top: 0.35,
@@ -562,7 +644,6 @@ class RENDERDATA {
         if (leadingZeros > 5) {
             // Generate the format string with leading zeros
             const formatString = `${"0".repeat(leadingZeros).length - 1}`;
-            console.log(formatString)
 
             return `${numberBeforeDecimal}.0<sub>${formatString}</sub>${numberAfterDecimal}`
 
@@ -584,8 +665,23 @@ class RENDERDATA {
     }
 
     handleViewportResize(entries) {
-            this.$wrapperToShow.style.opacity = "1";
-            this.renderDataOnChart(true);
+        this.$wrapperToShow.style.opacity = "1";
+        if(window.screen.width>1279){
+            this.$desktopSwapper.style.display = "block";
+            this.$allTabMenuArray?.forEach(tab =>{
+                tab.style.display = "flex"
+            })
+        }else{
+            this.$allTabMenuArray?.forEach(tab =>{
+                tab.style.display = "none"
+            })
+            this.$desktopSwapper.style.display = "none";
+        }
+        this.renderDataOnChart(true);
+    }
+
+    handleViewPortOnError(entries){
+        this.HandleShowAndHideElement();
     }
 
     checkCookie(cookieName) {
