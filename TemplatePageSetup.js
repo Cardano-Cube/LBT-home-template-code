@@ -170,7 +170,6 @@ class RENDERDATA {
 
     renderSwapper() {
         if (this.GLOBAL_DATA_OBJECT?.tokenData?.asset_id) {
-            // Create a React component with desired props
             const dexhunterComponent = React.createElement(dexhunterSwap, {
                 orderTypes: ["SWAP", "LIMIT"],
                 defaultToken: this.GLOBAL_DATA_OBJECT.tokenData.asset_id,
@@ -188,7 +187,7 @@ class RENDERDATA {
                 partnerName: "CardanoCube.io"
             });
     
-            const isMobile = window.matchMedia("only screen and (max-width: 768px)").matches;
+            const isMobile = window.matchMedia("only screen and (max-width: 1279px)").matches;
             console.log(isMobile);
             if (isMobile) {
                 ReactDOM.render(dexhunterComponent, document.getElementById('dexhunter-root-mobile'));
