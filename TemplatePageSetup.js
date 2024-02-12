@@ -134,14 +134,14 @@ class RENDERDATA {
             this.renderDataOnChart();
             this.renderSwapper();
 
-            this.$wrapperToShow.style.opacity = 1;
 
             this.$desktopAboutWrapper.style.display = "none";
             this.$mobileAboutWrapper.style.display = "none";
-            this.$rightSideContainer.style.opacity = 1;
 
 
             this.$loader.remove();
+            this.$wrapperToShow.style.opacity = 1;
+            this.$rightSideContainer.style.opacity = 1;
             this.viewportObserver.observe(document.body);
 
         }
