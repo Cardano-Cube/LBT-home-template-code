@@ -339,7 +339,7 @@ class LOADANDRENDERTOKENS {
                     tokenMonthChange.textContent = token["1mo_change_usd"] && this.formatNumber(token["1mo_change_usd"], true) + "%";
                     tokenVolume.textContent = "$" + this.convertToInternationalCurrencySystem(token["24h_vol_usd"]);
 
-                    // this.createLineChart(tokenChartWrapper, token["chart_7d_usd"], token["7d_change_usd"]);
+                    this.createLineChart(tokenChartWrapper, token["chart_7d_usd"], token["7d_change_usd"]);
 
                 }
 
@@ -380,7 +380,7 @@ class LOADANDRENDERTOKENS {
                     tokenMonthChange.textContent = token["1mo_change_ada"] && this.formatNumber(token["1mo_change_ada"], true) + "%";
                     tokenVolume.innerHTML = this.formatNumberWithCommas(token["24h_vol_usd"]) + "<span style='font-weight:500;'>₳</span>";
 
-                    // this.createLineChart(tokenChartWrapper, token["chart_7d_ada"], token["7d_change_ada"]);
+                    this.createLineChart(tokenChartWrapper, token["chart_7d_ada"], token["7d_change_ada"]);
                 }
 
 
