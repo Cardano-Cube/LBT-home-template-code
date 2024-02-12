@@ -661,7 +661,7 @@ class RENDERDATA {
         const numberAfterDecimal = parseFloat(String(splitToZeros[1])?.replace(/0/g, ''));
         const leadingZeros = Math.ceil(Math.log10(1 / price));
         console.log(leadingZeros);
-        if (leadingZeros > 5) {
+        if (leadingZeros > 5 && leadingZeros != Infinity) {
             // Generate the format string with leading zeros
             const formatString = `${"0".repeat(leadingZeros).length - 1}`;
 
