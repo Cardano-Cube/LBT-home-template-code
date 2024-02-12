@@ -199,7 +199,7 @@ class RENDERDATA {
         if (this.$secondDexWrapper != undefined & this.$assetID != "") {
             const dexhunterComponent = React.createElement(dexhunterSwap, {
                 orderTypes: ["SWAP", "LIMIT"],
-                defaultToken: this.GLOBAL_DATA_OBJECT.tokenData.asset_id,
+                defaultToken: this.$assetID,
                 colors: {
                     background: "#FFFFFF",
                     containers: "#F6F6F9",
