@@ -62,7 +62,7 @@
 
 @media screen and (max-width: 320px){
 .three-col_cell {
-    max-width: 250px;
+    max-width: 260px;
 }
 }
 @media screen and (max-width: 767px) and (min-width:670px){
@@ -77,7 +77,7 @@
 }
 @media screen and (max-width: 581px) and (min-width:480px){
 .three-col_cell {
-    max-width: 450px;
+    max-width: 400px;
 }
 }
 /* Fix for dexhunter */
