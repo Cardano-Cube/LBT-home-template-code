@@ -170,16 +170,31 @@ class RENDERDATA {
 
     renderSwapper() {
         if (this.GLOBAL_DATA_OBJECT?.tokenData?.asset_id) {
-            let scriptElement = document.createElement("script");
-            scriptElement.type = "module";
-            scriptElement.innerHTML = `ReactDOM.render( React.createElement( dexhunterSwap, {"orderTypes":["SWAP","LIMIT"],"defaultToken":"${this.GLOBAL_DATA_OBJECT.tokenData["asset_id"]}","colors":{"background":"#FFFFFF","containers":"#F6F6F9","subText":"#859DA2","mainText":"#11424A","buttonText":"#FFFFFF","accent":"#00D061"},"theme":"light","width":"100%","partnerCode":"cardanocube.io616464723171396666367678737577656775683370667135716b6164756361746a65343468346a6437373678637a7266377466346c77733564666d6a6c68687133356c72717865367539633575667a7a733361306479357a3433746c32377466737a3875366c7ada39a3ee5e6b4b0d3255bfef95601890afd80709","partnerName":"CardanoCube.io"} ), document.getElementById('dexhunter-root') );`;
-            document.body.appendChild(scriptElement);
-
-            // let scriptSecondElement = document.createElement("script");
-            // scriptSecondElement.type = "module";
-            // scriptSecondElement.innerHTML = `ReactDOM.render( React.createElement( dexhunterSwap, {"orderTypes":["SWAP","LIMIT"],"defaultToken":"${this.GLOBAL_DATA_OBJECT.tokenData["asset_id"]}","colors":{"background":"#FFFFFF","containers":"#F6F6F9","subText":"#859DA2","mainText":"#11424A","buttonText":"#FFFFFF","accent":"#00D061"},"theme":"light","width":"100%","partnerCode":"cardanocube.io616464723171396666367678737577656775683370667135716b6164756361746a65343468346a6437373678637a7266377466346c77733564666d6a6c68687133356c72717865367539633575667a7a733361306479357a3433746c32377466737a3875366c7ada39a3ee5e6b4b0d3255bfef95601890afd80709","partnerName":"CardanoCube.io"} ), document.getElementById('dexhunter-root-mobile') );`;
-            // document.body.appendChild(scriptSecondElement);
-
+            // Create a React component with desired props
+            const dexhunterComponent = React.createElement(dexhunterSwap, {
+                orderTypes: ["SWAP", "LIMIT"],
+                defaultToken: this.GLOBAL_DATA_OBJECT.tokenData.asset_id,
+                colors: {
+                    background: "#FFFFFF",
+                    containers: "#F6F6F9",
+                    subText: "#859DA2",
+                    mainText: "#11424A",
+                    buttonText: "#FFFFFF",
+                    accent: "#00D061"
+                },
+                theme: "light",
+                width: "100%",
+                partnerCode: "cardanocube.io616464723171396666367678737577656775683370667135716b6164756361746a65343468346a6437373678637a7266377466346c77733564666d6a6c68687133356c72717865367539633575667a7a733361306479357a3433746c32377466737a3875366c7ada39a3ee5e6b4b0d3255bfef95601890afd80709",
+                partnerName: "CardanoCube.io"
+            });
+    
+            const isMobile = window.matchMedia("only screen and (max-width: 768px)").matches;
+            console.log(isMobile);
+            if (isMobile) {
+                ReactDOM.render(dexhunterComponent, document.getElementById('dexhunter-root-mobile'));
+            } else {
+                ReactDOM.render(dexhunterComponent, document.getElementById('dexhunter-root'));
+            }
         }
 
         if (this.$secondDexWrapper != undefined & this.$assetID != "") {
