@@ -653,6 +653,7 @@ class RENDERDATA {
     }
 
     reduceNumber(price) {
+        console.log(price);
         const decimalPlaces = String(price) // Calculate the number of decimal places
         const stringNumber = price.toFixed(decimalPlaces.length); // Use the calculated number of decimal places
         const splitToZeros = stringNumber?.split(".");
