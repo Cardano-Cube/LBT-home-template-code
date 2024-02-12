@@ -60,9 +60,9 @@
     padding-left: 0;
 }
 
-@media screen and (max-width: 320px){
+@media screen and (max-width: 350px){
 .three-col_cell {
-    max-width: 260px;
+    max-width: 250px;
 }
 }
 @media screen and (max-width: 767px) and (min-width:670px){
@@ -79,6 +79,11 @@
 .three-col_cell {
     max-width: 400px;
 }
+}
+@media screen and (max-width: 479px) and (min-width: 349px){
+    .three-col_cell {
+        max-width: 310px;
+    }
 }
 /* Fix for dexhunter */
 #dexhunter-container :is(.dhs-pt-3){
