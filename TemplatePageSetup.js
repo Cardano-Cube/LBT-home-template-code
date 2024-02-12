@@ -36,6 +36,7 @@ class RENDERDATA {
         this.$assetID = this.$secondDexWrapper?.getAttribute("asset-id");
 
         this.$desktopSwapper = document.querySelector("[show-if-token='desktop']");
+        this.$swapperComponent = document.querySelector("[show-if-chart='desktop']");
         this.$mobileSwapper = document.getElementById("dexhunter-container");
         this.$desktopAboutWrapper = document.querySelector("[show-if-no-token='desktop']");
         this.$mobileAboutWrapper = document.querySelector("[show-if-no-token='mobile']");
@@ -190,6 +191,7 @@ class RENDERDATA {
             const isMobile = window.matchMedia("only screen and (max-width: 1279px)").matches;
             console.log(isMobile);
             if (isMobile) {
+                this.$swapperComponent.style.display = 'none';
                 ReactDOM.render(dexhunterComponent, document.getElementById('dexhunter-root-mobile'));
             } else {
                 ReactDOM.render(dexhunterComponent, document.getElementById('dexhunter-root'));
@@ -217,6 +219,7 @@ class RENDERDATA {
             const isMobile = window.matchMedia("only screen and (max-width: 1279px)").matches;
             console.log(isMobile);
             if (isMobile) {
+                this.$swapperComponent.style.display = 'none';
                 ReactDOM.render(dexhunterComponent, document.getElementById('dexhunter-root-mobile'));
             } else {
                 ReactDOM.render(dexhunterComponent, document.getElementById('dexhunter-root'));
