@@ -586,7 +586,7 @@ class RENDERDATA {
                 priceFormat: {
                     type: 'price',
                     // formatter: (price) => parseFloat(price).toFixed(8),
-                    // precision:4,
+                    precision:8,
                     // minMove:0.0001
 
                 },
