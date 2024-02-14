@@ -188,14 +188,19 @@ class RENDERDATA {
                 partnerName: "CardanoCube.io"
             });
     
-            const isMobile = window.matchMedia("only screen and (max-width: 1279px)").matches;
-            console.log(isMobile);
-            if (isMobile) {
-                this.$swapperComponent.style.display = 'none';
-                ReactDOM.render(dexhunterComponent, document.getElementById('dexhunter-root-mobile'));
-            } else {
-                ReactDOM.render(dexhunterComponent, document.getElementById('dexhunter-root'));
-            }
+            const updateComponent = () => {
+                const isMobile = window.matchMedia("only screen and (max-width: 1279px)").matches;
+                console.log(isMobile);
+                if (isMobile) {
+                    this.$swapperComponent.style.display = 'none';
+                    ReactDOM.render(dexhunterComponent, document.getElementById('dexhunter-root-mobile'));
+                } else {
+                    this.$swapperComponent.style.display = 'none';
+                    ReactDOM.render(dexhunterComponent, document.getElementById('dexhunter-root'));
+                }
+            };
+            updateComponent();
+            window.addEventListener('resize', updateComponent);
         }
 
         if (this.$secondDexWrapper != undefined & this.$assetID != "") {
