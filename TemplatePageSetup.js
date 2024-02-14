@@ -195,8 +195,13 @@ class RENDERDATA {
                     this.$swapperComponent.style.display = 'none';
                     ReactDOM.render(dexhunterComponent, document.getElementById('dexhunter-root-mobile'));
                 } else {
-                    this.$swapperComponent.style.display = 'none';
+                    this.$swapperComponent.style.display = 'flex';
+                    const mobileRoot = document.getElementById('dexhunter-root-mobile');
+                    if (mobileRoot) {
+                        ReactDOM.unmountComponentAtNode(mobileRoot);
+                    }
                     ReactDOM.render(dexhunterComponent, document.getElementById('dexhunter-root'));
+                    console.log('enter');
                 }
             };
             updateComponent();
@@ -221,14 +226,24 @@ class RENDERDATA {
                 partnerName: "CardanoCube.io"
             });
     
-            const isMobile = window.matchMedia("only screen and (max-width: 1279px)").matches;
-            console.log(isMobile);
-            if (isMobile) {
-                this.$swapperComponent.style.display = 'none';
-                ReactDOM.render(dexhunterComponent, document.getElementById('dexhunter-root-mobile'));
-            } else {
-                ReactDOM.render(dexhunterComponent, document.getElementById('dexhunter-root'));
-            }
+            const updateComponent = () => {
+                const isMobile = window.matchMedia("only screen and (max-width: 1279px)").matches;
+                console.log(isMobile);
+                if (isMobile) {
+                    this.$swapperComponent.style.display = 'none';
+                    ReactDOM.render(dexhunterComponent, document.getElementById('dexhunter-root-mobile'));
+                } else {
+                    this.$swapperComponent.style.display = 'flex';
+                    const mobileRoot = document.getElementById('dexhunter-root-mobile');
+                    if (mobileRoot) {
+                        ReactDOM.unmountComponentAtNode(mobileRoot);
+                    }
+                    ReactDOM.render(dexhunterComponent, document.getElementById('dexhunter-root'));
+                    console.log('enter');
+                }
+            };
+            updateComponent();
+            window.addEventListener('resize', updateComponent);
         }
 
 
