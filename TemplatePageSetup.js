@@ -280,6 +280,7 @@ class RENDERDATA {
                 });
                 this.$backupPopupTrigger.style.display = "none";
                 this.$desktopSwapper.style.display = "none";
+                this.checkAndRemovePadding();
 
             } else {
                 this.$allTabMenuArray?.forEach((tab, index) => {
@@ -776,6 +777,16 @@ class RENDERDATA {
         d.setTime(d.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
         let expires = "expires=" + d.toUTCString();
         document.cookie = cookieName + "=" + cookieValue + ";" + expires + ";path=/";
+    }
+
+    checkAndRemovePadding(){
+        let chartWrapper = document.querySelector("[token-data='chart']");
+        let heroSection = document.querySelector("[wrapper='remove-padding']");
+        let classToAdd= "project-temp_btm-padding";
+        let checkChartDisplayProperty = chartWrapper.innerHTML;
+        if(checkChartDisplayProperty == ""){
+            heroSection&& heroSection.classList.add(classToAdd);
+        }
     }
 }
 
