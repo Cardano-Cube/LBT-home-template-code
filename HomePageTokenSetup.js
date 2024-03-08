@@ -380,8 +380,10 @@ class LOADANDRENDERTOKENS {
                     }
 
                     tokenPrice.innerHTML = this.reduceNumber(token.price_in_ada) + "<span style='font-weight:500;'>₳</span>";
-                    tokenMarketCap.innerHTML = this.formatNumberWithCommas(token["market_cap_ada"]) + "<span style='font-weight:500;'>₳</span>";
-                    tokenMarketMobile.innerHTML = this.formatNumberWithCommas(token["market_cap_ada"]) + "<span style='font-weight:500;'>₳</span>";
+                    tokenMarketCap.innerHTML = this.convertToInternationalCurrencySystem(token["market_cap_ada"]) + "<span style='font-weight:500;'>₳</span>";
+                    tokenMarketMobile.innerHTML = this.convertToInternationalCurrencySystem(token["market_cap_ada"]) + "<span style='font-weight:500;'>₳</span>";
+                    // tokenMarketCap.innerHTML = this.formatNumberWithCommas(token["market_cap_ada"]) + "<span style='font-weight:500;'>₳</span>";
+                    // tokenMarketMobile.innerHTML = this.formatNumberWithCommas(token["market_cap_ada"]) + "<span style='font-weight:500;'>₳</span>";
                     tokenDayChange.textContent = token["24h_change_ada"] && this.formatNumber(token["24h_change_ada"], true) + "%";
                     tokenWeekChange.textContent = token["7d_change_ada"] && this.formatNumber(token["7d_change_ada"], true) + "%";
                     tokenMonthChange.textContent = token["1mo_change_ada"] && this.formatNumber(token["1mo_change_ada"], true) + "%";
