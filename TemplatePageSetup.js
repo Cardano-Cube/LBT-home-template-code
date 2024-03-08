@@ -464,13 +464,13 @@ class RENDERDATA {
         }
 
         // ** Render other data
-        this.$marketCapElement.textContent = "-";
+        this.$marketCapElement.textContent = this.convertToInternationalCurrencySystem(this.GLOBAL_DATA_OBJECT.tokenData["market_cap_usd"]);
 
-        this.$dilutedMarketCapElement.textContent = "-";
+        this.$dilutedMarketCapElement.textContent = this.convertToInternationalCurrencySystem(this.GLOBAL_DATA_OBJECT.tokenData["diluated_market_cap_usd"]);
 
-        this.$circulatingSupplyElement.textContent = "-";
+        this.$circulatingSupplyElement.textContent = this.convertToInternationalCurrencySystem(this.GLOBAL_DATA_OBJECT.tokenData["circulating_supply"]);
 
-        this.$circulatingPercentElement.textContent = "-";
+        this.$circulatingPercentElement.textContent = this.calculateCirculatingSupplyPercentage(this.GLOBAL_DATA_OBJECT.tokenData["circulating_supply"],this.GLOBAL_DATA_OBJECT.tokenData["total_supply"]) + "%";
 
         let decimalAddedTotalSupply = this.GLOBAL_DATA_OBJECT.tokenData["total_supply"] && this.cutZeros(this.GLOBAL_DATA_OBJECT.tokenData["total_supply"], this.GLOBAL_DATA_OBJECT.tokenData["decimals"]);
 
@@ -487,6 +487,18 @@ class RENDERDATA {
         this.$oneUsdElement.textContent = this.formatNumber(this.GLOBAL_DATA_OBJECT.tokenData["1USD"]) + " " + this.$tokenSlug.textContent;
 
         this.$releaseDateElement.textContent = this.GLOBAL_DATA_OBJECT.tokenData["created_date"] && new Date(this.GLOBAL_DATA_OBJECT.tokenData["created_date"]).getFullYear();
+    }
+
+    calculateCirculatingSupplyPercentage(circulatingSupply, totalSupply) {
+        // Ensure both circulatingSupply and totalSupply are numbers and totalSupply is not zero to avoid division by zero
+        if (typeof circulatingSupply !== 'number' || typeof totalSupply !== 'number' || totalSupply === 0) {
+            return"-"
+        }
+    
+        // Calculate the circulating supply percentage
+        const circulatingSupplyPercentage = (circulatingSupply / totalSupply) * 100;
+    
+        return circulatingSupplyPercentage.toFixed(2); // Return the percentage with 2 decimal places
     }
 
     cutZeros(number, zerosToCut) {
