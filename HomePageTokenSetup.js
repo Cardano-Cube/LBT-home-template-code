@@ -561,14 +561,40 @@ class LOADANDRENDERTOKENS {
         return token?.toString()?.startsWith("-");
     }
 
-    formatNumber(num, removeNeg) {
-        // Remove "-" sign if present
-        removeNeg ? num = Math.abs(num) : "";
+    // formatNumber(num, removeNeg) {
+    //     // Remove "-" sign if present
+    //     removeNeg ? num = Math.abs(num) : "";
 
-        if (num >= 1000) {
-            return (num / 1000).toFixed(2) + "K";
+    //     if (num >= 1000) {
+    //         return (num / 1000).toFixed(2) + "K";
+    //     } else {
+    //         return num?.toFixed(2);
+    //     }
+    // }
+    formatNumber(num, removeNeg, isPercentage = false) {
+        // Remove "-" sign if present
+        if (removeNeg) num = Math.abs(num);
+    
+        let suffix = "";
+        if (num >= 1e12) {
+            num /= 1e12;
+            suffix = "T";
+        } else if (num >= 1e9) {
+            num /= 1e9;
+            suffix = "B";
+        } else if (num >= 1e6) {
+            num /= 1e6;
+            suffix = "M";
+        } else if (num >= 1e3) {
+            num /= 1e3;
+            suffix = "K";
+        }
+    
+        // If the number represents a percentage
+        if (isPercentage) {
+            return `${num.toFixed(2)}${suffix}%`;
         } else {
-            return num?.toFixed(2);
+            return `${num.toFixed(2)}${suffix}`;
         }
     }
 
