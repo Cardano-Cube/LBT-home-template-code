@@ -387,7 +387,7 @@ class LOADANDRENDERTOKENS {
                     tokenDayChange.textContent = token["24h_change_ada"] && this.formatNumber(token["24h_change_ada"], true) + "%";
                     tokenWeekChange.textContent = token["7d_change_ada"] && this.formatNumber(token["7d_change_ada"], true) + "%";
                     tokenMonthChange.textContent = token["1mo_change_ada"] && this.formatNumber(token["1mo_change_ada"], true) + "%";
-                    tokenVolume.innerHTML = this.formatNumberWithCommas(token["24h_vol_usd"]) + "<span style='font-weight:500;'>₳</span>";
+                    tokenVolume.innerHTML = this.convertToInternationalCurrencySystem(token["24h_vol_ada"]) + "<span style='font-weight:500;'> ₳</span>";
 
                     this.createLineChart(tokenChartWrapper, token["chart_7d_ada"], token["7d_change_ada"]);
                 }
