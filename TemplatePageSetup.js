@@ -683,6 +683,7 @@ class RENDERDATA {
     }
 
     formatNumberWithCommas(number, isUSCurrency) {
+        if(number == undefined)return"-";
         // Check if isUSCurrency is true or not
         if (isUSCurrency) {
             // Format as US currency (e.g., 1,234.56)
