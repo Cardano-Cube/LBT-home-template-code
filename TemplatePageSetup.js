@@ -739,6 +739,7 @@ class RENDERDATA {
     }
 
     formatNumber(num, removeNeg) {
+        if(num == null)return "-"
         // Remove "-" sign if present
         removeNeg ? num = Math.abs(num) : "";
 
