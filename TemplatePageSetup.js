@@ -472,9 +472,9 @@ class RENDERDATA {
 
         this.$circulatingPercentElement.textContent = this.calculateCirculatingSupplyPercentage(this.GLOBAL_DATA_OBJECT.tokenData["circulating_supply"],this.GLOBAL_DATA_OBJECT.tokenData["total_supply"]) + "%";
 
-        let decimalAddedTotalSupply = this.GLOBAL_DATA_OBJECT.tokenData["total_supply"] && this.cutZeros(this.GLOBAL_DATA_OBJECT.tokenData["total_supply"], this.GLOBAL_DATA_OBJECT.tokenData["decimals"]);
+        // let decimalAddedTotalSupply = this.GLOBAL_DATA_OBJECT.tokenData["total_supply"] && this.cutZeros(this.GLOBAL_DATA_OBJECT.tokenData["total_supply"], this.GLOBAL_DATA_OBJECT.tokenData["decimals"]);
 
-        let total_supply = decimalAddedTotalSupply
+        let total_supply =  this.GLOBAL_DATA_OBJECT.tokenData["total_supply"]
 
         this.$totalSupplyElement.textContent = this.convertToInternationalCurrencySystem(total_supply) + " " + this.$tokenSlug.textContent;
 
@@ -719,6 +719,7 @@ class RENDERDATA {
     }
 
     reduceNumber(price) {
+        if(price == undefined) return "-";
         const decimalPlaces = String(price) // Calculate the number of decimal places
         const stringNumber = price.toFixed(decimalPlaces.length); // Use the calculated number of decimal places
         const splitToZeros = stringNumber?.split(".");
