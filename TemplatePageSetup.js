@@ -695,6 +695,7 @@ class RENDERDATA {
     }
 
     convertToInternationalCurrencySystem(labelValue) {
+        if(labelValue== undefined || labelValue == null)return "-"
 
         // Nine Zeroes for Billions
         return Math.abs(Number(labelValue)) >= 1.0e+9
