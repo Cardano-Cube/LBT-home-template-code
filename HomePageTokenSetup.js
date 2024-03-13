@@ -447,8 +447,8 @@ class LOADANDRENDERTOKENS {
             elementToLink.addEventListener("click", () => {
                 const searchParams = window.location.search;
                 const urlWithParams = `${pageUrl}${searchParams}`;
-                // window.location.assign(urlWithParams)
-                window.open(urlWithParams, "_blank");
+                window.location.assign(urlWithParams)
+                // window.open(urlWithParams, "_blank");
             })
         }
     }
