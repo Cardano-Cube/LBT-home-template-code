@@ -462,8 +462,9 @@ class LOADANDRENDERTOKENS {
             height: 44, // Set the desired height
             layout: {
                 background: {
-                    type: 'solid',
-                    color: '#f8f9fd',
+                    // type: 'solid',
+                    // color: '#f8f9fd',
+                    color: 'transparent'
                 },
             },
             grid: {
