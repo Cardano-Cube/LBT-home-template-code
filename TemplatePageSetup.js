@@ -280,6 +280,7 @@ class RENDERDATA {
                 });
                 this.$backupPopupTrigger.style.display = "none";
                 this.$desktopSwapper.style.display = "none";
+                this.checkAndRemovePadding();
 
             } else {
                 this.$allTabMenuArray?.forEach((tab, index) => {
@@ -463,17 +464,17 @@ class RENDERDATA {
         }
 
         // ** Render other data
-        this.$marketCapElement.textContent = "-";
+        this.$marketCapElement.textContent = this.convertToInternationalCurrencySystem(this.GLOBAL_DATA_OBJECT.tokenData["market_cap_usd"]);
 
-        this.$dilutedMarketCapElement.textContent = "-";
+        this.$dilutedMarketCapElement.textContent = this.convertToInternationalCurrencySystem(this.GLOBAL_DATA_OBJECT.tokenData["diluated_market_cap_usd"]);
 
-        this.$circulatingSupplyElement.textContent = "-";
+        this.$circulatingSupplyElement.textContent = this.convertToInternationalCurrencySystem(this.GLOBAL_DATA_OBJECT.tokenData["circulating_supply"]);
 
-        this.$circulatingPercentElement.textContent = "-";
+        this.$circulatingPercentElement.textContent = this.calculateCirculatingSupplyPercentage(this.GLOBAL_DATA_OBJECT.tokenData["circulating_supply"],this.GLOBAL_DATA_OBJECT.tokenData["total_supply"]) + "%";
 
-        let decimalAddedTotalSupply = this.GLOBAL_DATA_OBJECT.tokenData["total_supply"] && this.cutZeros(this.GLOBAL_DATA_OBJECT.tokenData["total_supply"], this.GLOBAL_DATA_OBJECT.tokenData["decimals"]);
+        // let decimalAddedTotalSupply = this.GLOBAL_DATA_OBJECT.tokenData["total_supply"] && this.cutZeros(this.GLOBAL_DATA_OBJECT.tokenData["total_supply"], this.GLOBAL_DATA_OBJECT.tokenData["decimals"]);
 
-        let total_supply = decimalAddedTotalSupply
+        let total_supply =  this.GLOBAL_DATA_OBJECT.tokenData["total_supply"]
 
         this.$totalSupplyElement.textContent = this.convertToInternationalCurrencySystem(total_supply) + " " + this.$tokenSlug.textContent;
 
@@ -486,6 +487,18 @@ class RENDERDATA {
         this.$oneUsdElement.textContent = this.formatNumber(this.GLOBAL_DATA_OBJECT.tokenData["1USD"]) + " " + this.$tokenSlug.textContent;
 
         this.$releaseDateElement.textContent = this.GLOBAL_DATA_OBJECT.tokenData["created_date"] && new Date(this.GLOBAL_DATA_OBJECT.tokenData["created_date"]).getFullYear();
+    }
+
+    calculateCirculatingSupplyPercentage(circulatingSupply, totalSupply) {
+        // Ensure both circulatingSupply and totalSupply are numbers and totalSupply is not zero to avoid division by zero
+        if (typeof circulatingSupply !== 'number' || typeof totalSupply !== 'number' || totalSupply === 0) {
+            return"-"
+        }
+    
+        // Calculate the circulating supply percentage
+        const circulatingSupplyPercentage = (circulatingSupply / totalSupply) * 100;
+    
+        return circulatingSupplyPercentage.toFixed(2); // Return the percentage with 2 decimal places
     }
 
     cutZeros(number, zerosToCut) {
@@ -670,6 +683,7 @@ class RENDERDATA {
     }
 
     formatNumberWithCommas(number, isUSCurrency) {
+        if(number == undefined)return"-";
         // Check if isUSCurrency is true or not
         if (isUSCurrency) {
             // Format as US currency (e.g., 1,234.56)
@@ -681,6 +695,7 @@ class RENDERDATA {
     }
 
     convertToInternationalCurrencySystem(labelValue) {
+        if(labelValue== undefined || labelValue == null)return "-"
 
         // Nine Zeroes for Billions
         return Math.abs(Number(labelValue)) >= 1.0e+9
@@ -705,6 +720,7 @@ class RENDERDATA {
     }
 
     reduceNumber(price) {
+        if(price == undefined) return "-";
         const decimalPlaces = String(price) // Calculate the number of decimal places
         const stringNumber = price.toFixed(decimalPlaces.length); // Use the calculated number of decimal places
         const splitToZeros = stringNumber?.split(".");
@@ -724,6 +740,7 @@ class RENDERDATA {
     }
 
     formatNumber(num, removeNeg) {
+        if(num == null)return "-"
         // Remove "-" sign if present
         removeNeg ? num = Math.abs(num) : "";
 
@@ -776,6 +793,16 @@ class RENDERDATA {
         d.setTime(d.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
         let expires = "expires=" + d.toUTCString();
         document.cookie = cookieName + "=" + cookieValue + ";" + expires + ";path=/";
+    }
+
+    checkAndRemovePadding(){
+        let chartWrapper = document.querySelector("[token-data='chart']");
+        let heroSection = document.querySelector("[wrapper='remove-padding']");
+        let classToAdd= "project-temp_btm-padding";
+        let checkChartDisplayProperty = chartWrapper.innerHTML;
+        if(checkChartDisplayProperty == ""){
+            heroSection&& heroSection.classList.add(classToAdd);
+        }
     }
 }
 
