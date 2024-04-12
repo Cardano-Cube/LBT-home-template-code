@@ -41,20 +41,21 @@ class LOADANDRENDERTOKENS {
         }
 
         this.globalObject = {
-            activeCategory: "top-token",
+            // activeCategory: "top-50",
+            activeCategory: "trending",
             activeCurrency: "usd",
             cookieName: "currentCurrency",
             tokensData: null,
             tokensToRender: 25,
-            topTokensTokens: [],
+            topFiftyTokens: [],
             trendingTokens: [],
             topGainerTokens: [],
             topLoserTokens: [],
-            topTokensToRender: [],
+            topFiftyTokensToRender: [],
             trendingTokensToRender: [],
             topGainerTokensToRender: [],
             topLoserTokensToRender: [],
-            topTokensToRenderPosition: 0,
+            topFiftyTokensToRenderPosition: 0,
             trendingTokensToRenderPosition: 0,
             topGainerTokensToRenderPosition: 0,
             topLoserTokensToRenderPosition: 0,
@@ -122,9 +123,11 @@ class LOADANDRENDERTOKENS {
         if (this.globalObject.tokensData.length > 0) {
             this.globalObject.tokensData.forEach(token => {
 
-                if(token?.top_tokens?.rank!=undefined ||token?.top_tokens?.rank!=null){
-                    this.globalObject.topTokensTokens.push(token);
-                }
+                // Write now its not possible.
+                // For top 50 tokens
+                // if(token?.trending?.rank!=undefined ||token?.trending?.rank!=null){
+                //     this.globalObject.topFiftyTokens.push(token);
+                // }
 
                 // For trending tokens
                 if (token?.trending?.rank != undefined || token?.trending?.rank != null) {
@@ -144,17 +147,9 @@ class LOADANDRENDERTOKENS {
 
     splitAndRender(split) {
         // write now its not possible.
-        if(this.globalObject.activeCategory=="top-token"){
-            if (split) {
-                let topTokensToRender = this.splitTokens(this.globalObject.topTokensTokens, this.globalObject.topTokensToRenderPosition, "topTokensToRenderPosition");
+        // if(this.globalObject.activeCategory=="top-50"){
 
-                this.globalObject.topTokensToRender.push(...topTokensToRender);
-            }
-
-            this.renderDataOnDom(this.globalObject.topTokensToRender);
-
-            this.enableDisableLoadMore(this.globalObject.topTokensTokens, this.globalObject.topTokensToRender);
-        }
+        // }
         if (this.globalObject.activeCategory == "trending") {
             if (split) {
                 let trendingTokensToRender = this.splitTokens(this.globalObject.trendingTokens, this.globalObject.trendingTokensToRenderPosition, "trendingTokensToRenderPosition");
@@ -255,12 +250,10 @@ class LOADANDRENDERTOKENS {
 
     sortTokens() {
         // sort top 50 tokens
-
-        let sortedTokens = this.globalObject.topTokensTokens.sort((a, b) => a.top_tokens.rank - b.top_tokens.rank);
-        this.globalObject.topTokensTokens = sortedTokens;
+        // Write now its not possible.
 
         // Filter trending
-        sortedTokens = this.globalObject.trendingTokens.sort((a, b) => a.trending.rank - b.trending.rank);
+        let sortedTokens = this.globalObject.trendingTokens.sort((a, b) => a.trending.rank - b.trending.rank);
         this.globalObject.trendingTokens = sortedTokens;
 
         // sort top_gainer tokens
@@ -339,8 +332,8 @@ class LOADANDRENDERTOKENS {
 
 
                     tokenPrice.innerHTML = `$${this.reduceNumber(token.price_in_usd)}`;
-                    tokenMarketCap.textContent = "$" + this.convertToInternationalCurrencySystem(token["market_cap_usd"]);
-                    tokenMarketMobile.textContent = "$" + this.convertToInternationalCurrencySystem(token["market_cap_usd"]);
+                    tokenMarketCap.textContent = "-"
+                    tokenMarketMobile.textContent = "-"
                     tokenDayChange.textContent = token["24h_change_usd"] && this.formatNumber(token["24h_change_usd"], true) + "%";
                     tokenWeekChange.textContent = token["7d_change_usd"] && this.formatNumber(token["7d_change_usd"], true) + "%";
                     tokenMonthChange.textContent = token["1mo_change_usd"] && this.formatNumber(token["1mo_change_usd"], true) + "%";
@@ -379,15 +372,13 @@ class LOADANDRENDERTOKENS {
                         tokenMonthChange.classList.add("is-high")
                     }
 
-                    tokenPrice.innerHTML = this.reduceNumber(token.price_in_ada) + "<span style='font-weight:500;'> ₳</span>";
-                    tokenMarketCap.innerHTML = this.convertToInternationalCurrencySystem(token["market_cap_ada"]) + "<span style='font-weight:500;'> ₳</span>";
-                    tokenMarketMobile.innerHTML = this.convertToInternationalCurrencySystem(token["market_cap_ada"]) + "<span style='font-weight:500;'> ₳</span>";
-                    // tokenMarketCap.innerHTML = this.formatNumberWithCommas(token["market_cap_ada"]) + "<span style='font-weight:500;'>₳</span>";
-                    // tokenMarketMobile.innerHTML = this.formatNumberWithCommas(token["market_cap_ada"]) + "<span style='font-weight:500;'>₳</span>";
+                    tokenPrice.innerHTML = this.reduceNumber(token.price_in_ada) + "<span style='font-weight:500;'>₳</span>";
+                    tokenMarketCap.textContent = "-"
+                    tokenMarketMobile.textContent = "-"
                     tokenDayChange.textContent = token["24h_change_ada"] && this.formatNumber(token["24h_change_ada"], true) + "%";
                     tokenWeekChange.textContent = token["7d_change_ada"] && this.formatNumber(token["7d_change_ada"], true) + "%";
                     tokenMonthChange.textContent = token["1mo_change_ada"] && this.formatNumber(token["1mo_change_ada"], true) + "%";
-                    tokenVolume.innerHTML = this.convertToInternationalCurrencySystem(token["24h_vol_ada"]) + "<span style='font-weight:500;'> ₳</span>";
+                    tokenVolume.innerHTML = this.formatNumberWithCommas(token["24h_vol_usd"]) + "<span style='font-weight:500;'>₳</span>";
 
                     this.createLineChart(tokenChartWrapper, token["chart_7d_ada"], token["7d_change_ada"]);
                 }
@@ -404,7 +395,6 @@ class LOADANDRENDERTOKENS {
     }
 
     convertToInternationalCurrencySystem(labelValue, isUSCurrency) {
-        if(labelValue == null) return "-";
         // Check if the absolute value of labelValue is greater than or equal to 600,000
         if (Math.abs(Number(labelValue)) >= 400000) {
             // Nine Zeroes for Billions
@@ -421,16 +411,15 @@ class LOADANDRENDERTOKENS {
             // If labelValue is less than 600,000, return the original value without abbreviation
             if (isUSCurrency) {
                 // Format as US currency (e.g., 1,234.56)
-                return labelValue?.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+                return labelValue.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
             } else {
                 // Format as normal currency (e.g., 1 234,56)
-                return labelValue?.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+                return labelValue.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
             }
         }
     }
 
     formatNumberWithCommas(number, isUSCurrency) {
-        if(number == null)return"-"
         // Check if isUSCurrency is true or not
         if (isUSCurrency) {
             // Format as US currency (e.g., 1,234.56)
@@ -447,8 +436,7 @@ class LOADANDRENDERTOKENS {
             elementToLink.addEventListener("click", () => {
                 const searchParams = window.location.search;
                 const urlWithParams = `${pageUrl}${searchParams}`;
-                //window.location.assign(urlWithParams)
-                // window.open(urlWithParams, "_blank");
+                window.location.assign(urlWithParams)
             })
         }
     }
@@ -474,9 +462,8 @@ class LOADANDRENDERTOKENS {
             height: 44, // Set the desired height
             layout: {
                 background: {
-                    // type: 'solid',
-                    // color: '#f8f9fd',
-                    color: 'transparent'
+                    type: 'solid',
+                    color: '#f8f9fd',
                 },
             },
             grid: {
@@ -565,45 +552,18 @@ class LOADANDRENDERTOKENS {
         return token?.toString()?.startsWith("-");
     }
 
-    // formatNumber(num, removeNeg) {
-    //     // Remove "-" sign if present
-    //     removeNeg ? num = Math.abs(num) : "";
-
-    //     if (num >= 1000) {
-    //         return (num / 1000).toFixed(2) + "K";
-    //     } else {
-    //         return num?.toFixed(2);
-    //     }
-    // }
-    formatNumber(num, removeNeg, isPercentage = false) {
+    formatNumber(num, removeNeg) {
         // Remove "-" sign if present
-        if (removeNeg) num = Math.abs(num);
-    
-        let suffix = "";
-        if (num >= 1e12) {
-            num /= 1e12;
-            suffix = "T";
-        } else if (num >= 1e9) {
-            num /= 1e9;
-            suffix = "B";
-        } else if (num >= 1e6) {
-            num /= 1e6;
-            suffix = "M";
-        } else if (num >= 1e3) {
-            num /= 1e3;
-            suffix = "K";
-        }
-    
-        // If the number represents a percentage
-        if (isPercentage) {
-            return `${num.toFixed(2)}${suffix}%`;
+        removeNeg ? num = Math.abs(num) : "";
+
+        if (num >= 1000) {
+            return (num / 1000).toFixed(2) + "K";
         } else {
-            return `${num.toFixed(2)}${suffix}`;
+            return num?.toFixed(2);
         }
     }
 
     reduceNumber(price) {
-        if(price == null)return"-";
         if (price >= 1) {
             // If price is greater than or equal to 1, format to three decimal places
             return price.toFixed(3);
